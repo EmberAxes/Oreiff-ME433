@@ -18,7 +18,7 @@ int main() {
     while (1){
         if (gpio_get(0) == 0){              // when button is pressed
             uint16_t result = adc_read();   // read adc
-            printf("%f",result);
+            printf("%d\r\n",result);
         }
     }
 }
