@@ -42,7 +42,7 @@ pico_set_program_version(cdc_io_adc "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(cdc_io_adc 0)
-pico_enable_stdio_usb(cdc_io_adc 0)
+pico_enable_stdio_usb(cdc_io_adc 1)
 
 # Add the standard library to the build
 target_link_libraries(cdc_io_adc
