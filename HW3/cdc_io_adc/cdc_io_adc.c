@@ -19,6 +19,11 @@ int main() {
     // --------------------------------//
     connectusb();       // enable usb communication and wait until open
 
+    gpio_put(1,1);      // turn on LED
+    while (gpio_get(0) == 1){   // Wait until button is pushed
+        ;
+    }
+    gpio_put(1,0);      // turn off LED
 }
 
 void connectusb(){
@@ -26,5 +31,5 @@ void connectusb(){
     while (!stdio_usb_connected()) {
         sleep_ms(100);
     }
-    printf("Start!\n");
+    printf("Connected!\n");
 }
