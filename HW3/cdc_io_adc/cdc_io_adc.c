@@ -24,6 +24,13 @@ int main() {
         ;
     }
     gpio_put(1,0);      // turn off LED
+
+    while (1){
+        uint16_t result = adc_read();   // Max is 4095 = 3.3 V
+        float volts = (result * 3.3) / (1 << 12);
+        printf("%.2f\n",volts);
+        sleep_ms(250);
+    }
 }
 
 void connectusb(){
