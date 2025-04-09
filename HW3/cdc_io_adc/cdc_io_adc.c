@@ -27,9 +27,15 @@ int main() {
 
     while (1){
         int samples;
-        printf("Enter a number: \r\n");
+        printf("Enter a number of samples: \r\n");
         scanf("%d", &samples);
-        
+
+        for (int i = 0; i < samples; i++){
+            uint16_t result = adc_read();   // Max is 4095 = 3.3 V
+            float volts = (result * 3.3) / (1 << 12);
+            printf("    %.2f\n",volts);
+            sleep_ms(10);       // 100 Hz
+        }
     }
 }
 
@@ -41,7 +47,3 @@ void connectusb(){
     printf("Connected!\n");
 }
 
-// uint16_t result = adc_read();   // Max is 4095 = 3.3 V
-// float volts = (result * 3.3) / (1 << 12);
-// printf("%.2f\n",volts);
-// sleep_ms(250);
