@@ -21,7 +21,7 @@ int main(){
     stdio_init_all();
 
     // SPI initialisation. This example will use SPI at 1MHz.
-    spi_init(spi_default, 1000); // the baud, or bits per second (1000*1000)
+    spi_init(spi_default, 10000000); // the baud, or bits per second (1000*1000)
     gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
@@ -32,23 +32,28 @@ int main(){
     gpio_put(PIN_CS, 1);
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
 
-    int ta = 0;
-    int tb = 0;
+    int t = 0;
+    float va;
+    float vb;
+    uint8_t adata[2];
+    uint8_t bdata[2];
 
     while (true) {
         // Channel A (0) will be the 2Hz sin wave
-        uint8_t data[2];
-        float va;
-        va = 1.65*sin(ta*(2*M_PI)/125) + 1.65;
-        inwriteDac(data, 0, va);    // Testing channel A output 3.3 V
-        printf("%f\n",va);
-        writeDac(data, 2);
-        ta += 1;
+        // Channel B (1) will be the 1 Hz triangle wave
+        va = 1.65*sin(4.*M_PI*(t/1000.)) + 1.65;
+        inwriteDac(adata, 0, va);
+        writeDac(adata, 2);
 
+        vb = 3.3*(t/1000.);        
+        inwriteDac(bdata, 1, vb);       
+        writeDac(bdata, 2);
+        sleep_ms(1);
+        t++;
+        if (t == 1000){
+            t = 0;
+        }
         // Channel B (1) will be the 1Hz triangle wave
-        
-        sleep_ms(1);        // Loop runs 1000 times per second
-
     }
 }
 
