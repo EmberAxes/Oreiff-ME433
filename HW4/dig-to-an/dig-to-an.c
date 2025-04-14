@@ -14,8 +14,8 @@
 
 static inline void cs_select(uint cs_pin);
 static inline void cs_deselect(uint cs_pin);
-void writeDac(uint8_t data[2], int len);
-void inwriteDac(int channel, float voltage);
+void writeDac(uint8_t *data, int len);
+void inwriteDac(uint8_t *data, int channel, float voltage);
 
 int main(){
     stdio_init_all();
@@ -32,12 +32,12 @@ int main(){
     gpio_put(PIN_CS, 1);
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
 
-    uint8_t data[2];
+    
 
     while (true) {
         printf("Hello, world!\n");
-        
-        inwriteDac(0, 1023);    // Testing channel A output 3.3 V
+        uint8_t data[2];
+        inwriteDac(data, 0, 2.);    // Testing channel A output 3.3 V
         writeDac(data, 2);
         sleep_ms(1);
 
@@ -57,15 +57,14 @@ static inline void cs_deselect(uint cs_pin) {
 }
 
 // Write to pin
-void writeDac(uint8_t data[2], int len){
+void writeDac(uint8_t *data, int len){
     cs_select(PIN_CS);
     spi_write_blocking(SPI_PORT, data, len); // where data is a uint8_t array with length len
     cs_deselect(PIN_CS);
 }
 
 // Step 1: Function that takes channel and voltage [0 - 1023] as inputs
-void inwriteDac(int channel, float voltage){
-    uint8_t data[2];
+void inwriteDac(uint8_t *data, int channel, float voltage){
     int len = 2;
     uint16_t d = 0;
 
@@ -74,8 +73,8 @@ void inwriteDac(int channel, float voltage){
     d = d | 0b111 << 12;        // we've been told the next 3 bits are all 1
 
     // Voltage stuff
-    uint16_t v = (voltage * 1024) / 1023;
+    uint16_t v = (voltage * 1023) / 3.3;
     d = d | v << 2;     // Need the last 2 bits of voltage to be zero
     data[0] = d >> 8;   // Grab the 4 channel stuff and first 4 voltage bits
-    data[1] = d & 0b11111111; // set the final 8 bits;
+    data[1] = d & 0xFF; // set the final 8 bits;
 }
