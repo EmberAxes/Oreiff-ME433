@@ -22,7 +22,7 @@ int main()
     stdio_init_all();
 
     // SPI initialisation. This example will use SPI at 1MHz.
-    spi_init(spi_default, 1000 * 1000); // the baud, or bits per second
+    spi_init(spi_default, 1000); // the baud, or bits per second (1000*1000)
     gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
@@ -34,6 +34,7 @@ int main()
 
     while (true) {
         printf("Hello, world!\n");
+        writeDac();
         sleep_ms(1000);
     }
 }
@@ -50,17 +51,28 @@ static inline void cs_deselect(uint cs_pin) {
     asm volatile("nop \n nop \n nop"); // FIXME
 }
 
-// Step 1: Function that takes channel and voltage [0 - 1023] as inputs
-void inwriteDac(int channel, float voltage){
-    uint8_t data[2];    // Have to put everything in here eventually
-    uint16_t d = 0;
-
-    // Need to put the 16 bit number in the right spot
-    d = d | (channel << 15);    // bit shifting to choose output A
-    d = d | 0b111 << 12;        // we've been told the next bits are all 1
-
-
+// Write to pin
+void writeDac(){
+    uint8_t data[2];
+    int len = 2;
+    data[0] = 0b10101010;
+    data[1] = 255;
+    cs_select(PIN_CS);
+    spi_write_blocking(SPI_PORT, data, len); // where data is a uint8_t array with length len
+    cs_deselect(PIN_CS);
 }
+
+// // Step 1: Function that takes channel and voltage [0 - 1023] as inputs
+// void inwriteDac(int channel, float voltage){
+//     uint8_t data[2];    // Have to put everything in here eventually
+//     uint16_t d = 0;
+
+//     // Need to put the 16 bit number in the right spot
+//     d = d | (channel << 15);    // bit shifting to choose output A
+//     d = d | 0b111 << 12;        // we've been told the next bits are all 1
+
+
+// }
 
 // cs_select(PIN_CS);
 // spi_write_blocking(SPI_PORT, data, len); // where data is a uint8_t array with length len
