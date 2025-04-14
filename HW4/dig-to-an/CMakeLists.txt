@@ -46,6 +46,7 @@ pico_enable_stdio_usb(dig-to-an 1)
 
 # Add the standard library to the build
 target_link_libraries(dig-to-an
+        hardware_spi
         pico_stdlib)
 
 # Add the standard include files to the build

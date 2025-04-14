@@ -8,7 +8,7 @@
 // Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
 #define SPI_PORT spi0
 #define PIN_MISO 16
-#define PIN_CS   17
+#define PIN_CS   20
 #define PIN_SCK  18
 #define PIN_MOSI 19
 
@@ -28,6 +28,7 @@ int main()
     gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
     
     // Chip select is active-low, so we'll initialise it to a driven-high state
+    gpio_init(PIN_CS); // PIN_NUM without the GP
     gpio_set_dir(PIN_CS, GPIO_OUT);
     gpio_put(PIN_CS, 1);
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
@@ -35,7 +36,7 @@ int main()
     while (true) {
         printf("Hello, world!\n");
         writeDac();
-        sleep_ms(1000);
+        sleep_ms(1);
     }
 }
 
@@ -55,7 +56,7 @@ static inline void cs_deselect(uint cs_pin) {
 void writeDac(){
     uint8_t data[2];
     int len = 2;
-    data[0] = 0b10101010;
+    data[0] = 0b01111010;
     data[1] = 255;
     cs_select(PIN_CS);
     spi_write_blocking(SPI_PORT, data, len); // where data is a uint8_t array with length len
@@ -73,7 +74,7 @@ void writeDac(){
 
 
 // }
-
+ 
 // cs_select(PIN_CS);
 // spi_write_blocking(SPI_PORT, data, len); // where data is a uint8_t array with length len
 // cs_deselect(PIN_CS);
