@@ -32,17 +32,18 @@ int main(){
     gpio_put(PIN_CS, 1);
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
 
-    float ta = 0;
-    float tb = 0;
+    int ta = 0;
+    int tb = 0;
 
     while (true) {
         // Channel A (0) will be the 2Hz sin wave
         uint8_t data[2];
         float va;
-        va = sin((2*3.14*ta)/500)*1.15 + 1.15;
-        inwriteDac(data, 0, 2.);    // Testing channel A output 3.3 V
+        va = 1.65*sin(ta*(2*M_PI)/125) + 1.65;
+        inwriteDac(data, 0, va);    // Testing channel A output 3.3 V
+        printf("%f\n",va);
         writeDac(data, 2);
-        ta += 0.001
+        ta += 1;
 
         // Channel B (1) will be the 1Hz triangle wave
         
