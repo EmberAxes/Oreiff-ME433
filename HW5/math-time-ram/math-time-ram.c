@@ -38,12 +38,20 @@ int main()
     spi_ram_init();
     
     // Test 1
-    float testin = 12345;
-    write_ram(0,testin);
-    float testout;
-    testout = read_ram(0);
-    printf("Test input: %f \r\n", testin);
-    printf("Test output: %f \r\n", testout);
+    float testin = 12345.;
+    uint16_t a = 0;
+    while (1){
+        testin += 1;
+        write_ram(a,testin);
+        float testout;
+        testout = read_ram(a);
+        printf("Test input: %f\r\n", testin);
+        printf("Test output: %f\r\n", testout);
+        printf("\r\n");
+
+        sleep_ms(1000);
+    }
+    
 }
 
 void spi_pi_init(){
@@ -118,17 +126,8 @@ float read_ram(uint16_t address){
     out_buff[5] = 0;
     out_buff[6] = 0;
 
-    // Testing read_ram: 01000010 10101100 00000000 00000000 = 86
-    in_buff[0] = 0;
-    in_buff[1] = 0;
-    in_buff[2] = 0;
-    in_buff[3] = 0b01000010;
-    in_buff[4] = 0b10101100;
-    in_buff[5] = 0;
-    in_buff[6] = 0;
-
     cs_select(RAM_CS);
-    spi_write_read_blocking(spi_default, out_buff, in_buff, 7);
+    spi_write_read_blocking(SPI_PORT, out_buff, in_buff, 14);
     cs_deselect(RAM_CS);
 
     union FloatInt num;
