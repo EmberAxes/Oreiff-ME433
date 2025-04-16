@@ -88,9 +88,14 @@ float read_ram(uint16_t address){
     out_buff[4] = 0;
     out_buff[5] = 0;
     out_buff[6] = 0;
-    out_buff[7] = 0;
-
+    
     cs_select(RAM_CS);
     spi_write_read_blocking(spi_default, out_buff, in_buff, 7);
     cs_deselect(RAM_CS);
+
+    union FloatInt num;
+    num.i = 0;
+    num.i = in_buff[3] << 24 | in_buff[4] << 16 | in_buff[5] << 8 | in_buff[6];
+
+    return num.f
 }
