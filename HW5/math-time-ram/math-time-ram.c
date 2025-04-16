@@ -18,6 +18,8 @@ union FloatInt{
     uint32_t i;
 };
 
+void connectusb();
+
 static inline void cs_select(uint cs_pin);
 static inline void cs_deselect(uint cs_pin);
 
@@ -29,11 +31,19 @@ void write_ram(uint16_t address, float data);
 
 int main()
 {
+    connectusb();
+
     //initialization chunk
-    stdio_init_all();
     spi_pi_init();
     spi_ram_init();
     
+    // Test 1
+    float testin = 12345;
+    write_ram(0,testin);
+    float testout;
+    testout = read_ram(0);
+    printf("Test input: %f \r\n", testin);
+    printf("Test output: %f \r\n", testout);
 }
 
 void spi_pi_init(){
@@ -77,7 +87,7 @@ static inline void cs_deselect(uint cs_pin) {
     asm volatile("nop \n nop \n nop"); // FIXME
 }
 
-void ram_write(uint16_t address, float mynum){
+void write_ram(uint16_t address, float mynum){
     uint8_t buff[7];
     buff[0] = 0b00000010;       // write instruction
     buff[1] = address >> 8;     // first 8 bits of address
@@ -125,5 +135,13 @@ float read_ram(uint16_t address){
     num.i = 0;
     num.i = in_buff[3] << 24 | in_buff[4] << 16 | in_buff[5] << 8 | in_buff[6];
 
-    return num.f
+    return num.f;
+}
+
+void connectusb(){
+    stdio_init_all();
+    while (!stdio_usb_connected()) {
+        sleep_ms(100);
+    }
+    printf("Connected!\n");
 }
