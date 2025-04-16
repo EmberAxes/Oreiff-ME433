@@ -12,7 +12,6 @@
 #define PI_TX 19
 
 #define RAM_CS 15
-#define RAM_SCK 18
 
 void spi_pi_init();
 void spi_ram_init();
@@ -21,16 +20,8 @@ int main()
 {
     stdio_init_all();
 
-    // SPI initialisation. This example will use SPI at 1MHz.
-    spi_init(SPI_PORT, 1000*1000);
-    gpio_set_function(PI_RX, GPIO_FUNC_SPI);
-    gpio_set_function(PI_CS,   GPIO_FUNC_SIO);
-    gpio_set_function(PI_SCK,  GPIO_FUNC_SPI);
-    gpio_set_function(PI_TX, GPIO_FUNC_SPI);
+    spi_pi_init();
     
-    // Chip select is active-low, so we'll initialise it to a driven-high state
-    gpio_set_dir(PI_CS, GPIO_OUT);
-    gpio_put(PI_CS, 1);
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
 
     while (true) {
@@ -38,3 +29,21 @@ int main()
         sleep_ms(1000);
     }
 }
+
+void spi_pi_init(){
+    spi_init(SPI_PORT, 1000*1000);
+
+    // These are for the DAC
+    gpio_set_function(PI_RX, GPIO_FUNC_SPI);
+    gpio_set_function(PI_CS,   GPIO_FUNC_SIO);
+    gpio_set_function(PI_SCK,  GPIO_FUNC_SPI);
+    gpio_set_function(PI_TX, GPIO_FUNC_SPI);
+
+    // These are for the ram
+    gpio_set_function(RAM_CS, GPIO_FUNC_SIO);
+    
+    // Chip select is active-low, so we'll initialise it to a driven-high state
+    gpio_set_dir(PI_CS, GPIO_OUT);
+    gpio_put(PI_CS, 1);
+}
+
