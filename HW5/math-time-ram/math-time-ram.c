@@ -25,8 +25,8 @@ static inline void cs_deselect(uint cs_pin);
 
 void spi_pi_init();
 void spi_ram_init();
-float read_ram(uint16_t *address);
-void write_ram(uint16_t *address, float data);
+float read_ram(uint16_t address);
+void write_ram(uint16_t address, float data);
 
 
 int main()
@@ -95,7 +95,7 @@ static inline void cs_deselect(uint cs_pin) {
     asm volatile("nop \n nop \n nop"); // FIXME
 }
 
-void write_ram(uint16_t *address, float mynum){
+void write_ram(uint16_t address, float mynum){
     uint8_t buff[7];
     buff[0] = 0b00000010;       // write instruction
     buff[1] = address >> 8;     // first 8 bits of address
@@ -115,7 +115,7 @@ void write_ram(uint16_t *address, float mynum){
 
 }
 
-float read_ram(uint16_t *address){
+float read_ram(uint16_t address){
     uint8_t out_buff[7], in_buff[7];
     out_buff[0] = 0b00000011;       // Read instruction
     out_buff[1] = address >> 8;     // First 8 bits of address
