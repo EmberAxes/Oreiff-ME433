@@ -36,20 +36,24 @@ int main()
     //initialization chunk
     spi_pi_init();
     spi_ram_init();
-    
-    // Test 1
-    float testin = 12345.;
-    uint16_t a = 0;
-    while (1){
-        testin += 1;
-        write_ram(a,testin);
-        float testout;
-        testout = read_ram(a);
-        printf("Test input: %f\r\n", testin);
-        printf("Test output: %f\r\n", testout);
-        printf("\r\n");
+    printf("Pi and Ram initialized.\r\n");
 
-        sleep_ms(1000);
+    // Test 2: Load 10 floats, return 10 floats
+    float b = 0;
+    uint16_t ad = 0;
+    for (int i = 0; i < 10; i++) {
+        write_ram(ad, b);
+        ad += sizeof(float); 
+        b += 1.0f;
+    }
+    printf("Floats loaded. \r\n");
+    ad = 0;
+    float b_out;
+    for (int i = 0; i < 10; i++){
+        b_out = read_ram(ad);
+        printf("Output: %f\r\n",b_out);
+        ad += sizeof(float);
+        sleep_ms(500);
     }
     
 }
@@ -144,3 +148,18 @@ void connectusb(){
     }
     printf("Connected!\n");
 }
+
+// // Test 1 success
+// float testin = 12345.;
+// uint16_t a = 0;
+// while (1){
+//     testin += 1;
+//     write_ram(a,testin);
+//     float testout;
+//     testout = read_ram(a);
+//     printf("Test input: %f\r\n", testin);
+//     printf("Test output: %f\r\n", testout);
+//     printf("\r\n");
+
+//     sleep_ms(1000);
+// }
