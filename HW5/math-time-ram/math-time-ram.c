@@ -38,23 +38,23 @@ int main()
     spi_ram_init();
     printf("Pi and Ram initialized.\r\n");
 
-    // Test 2: Load 10 floats, return 10 floats
-    float b = 0;
-    uint16_t ad = 0;
-    for (int i = 0; i < 10; i++) {
-        write_ram(ad, b);
-        ad += sizeof(float); 
-        b += 1.0f;
+    // Test 2: Load 3 floats, return 3 floats
+    uint16_t address = 0;
+    float test_values[3] = { 123.0f, 456.0f, 789.0f };
+
+    for (int i = 0; i < 3; i++) {
+        write_ram(address, test_values[i]);
+        address += sizeof(float);
     }
-    printf("Floats loaded. \r\n");
-    ad = 0;
-    float b_out;
-    for (int i = 0; i < 10; i++){
-        b_out = read_ram(ad);
-        printf("Output: %f\r\n",b_out);
-        ad += sizeof(float);
-        sleep_ms(500);
-    }
+
+    address = 0;
+    for (int i = 0; i < 3; i++) {
+        float result = read_ram(address);
+        printf("Read back float %d: %f\r\n", i, result);
+        address += sizeof(float);
+}
+
+
     
 }
 
@@ -131,7 +131,7 @@ float read_ram(uint16_t address){
     out_buff[6] = 0;
 
     cs_select(RAM_CS);
-    spi_write_read_blocking(SPI_PORT, out_buff, in_buff, 14);
+    spi_write_read_blocking(SPI_PORT, out_buff, in_buff, 7);
     cs_deselect(RAM_CS);
 
     union FloatInt num;
