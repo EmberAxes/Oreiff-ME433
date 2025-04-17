@@ -11,26 +11,50 @@ int main()
     volatile float f1, f2;
     printf("Enter two floats to use:\r\n");
     scanf("%f %f", &f1, &f2);
+    printf("Float 1 %f, float 2 %f\r\n",f1, f2);
+
     volatile float f_add, f_sub, f_mult, f_div;
 
-    // ADDITION
+    // ADDITION ----------------------------------------------
     absolute_time_t t1 = get_absolute_time();
     for (int i = 0; i < 1000; i++) {
         f_add = f1 + f2;
     }
-    float t_dif = to_us_since_boot(t1);
-    float t_per_calc = (float)t_dif / 1000;
-    float cycles = t_per_calc / 0.006667;
+    uint64_t t = to_us_since_boot(t1)/1000;
+    uint64_t cycles = t/667;
+    printf("Sum = %f\r\n",f_add);
+    printf("Cycles = %llu\n", cycles);
 
-    while (1){
-        printf("Cycles = %f\r\n", cycles);
-        sleep_ms(1000);
+    // Subtraction -------------------------------------------
+    absolute_time_t t1 = get_absolute_time();
+    for (int i = 0; i < 1000; i++) {
+        f_sub = f1 - f2;
     }
+    uint64_t t = to_us_since_boot(t1)/1000;
+    uint64_t cycles = t/667;
+    printf("Difference = %f\r\n",f_sub);
+    printf("Cycles = %llu\n", cycles);
+
+    // Multiplication -----------------------------------------
+    absolute_time_t t1 = get_absolute_time();
+    for (int i = 0; i < 1000; i++) {
+        f_mult = f1 * f2;
+    }
+    uint64_t t = to_us_since_boot(t1)/1000;
+    uint64_t cycles = t/667;
+    printf("Product = %f\r\n",f_mult);
+    printf("Cycles = %llu\n", cycles);
+
+    // Division ------------------------------------------------
+    absolute_time_t t1 = get_absolute_time();
+    for (int i = 0; i < 1000; i++) {
+        f_div = f1 / f2;
+    }
+    uint64_t t = to_us_since_boot(t1)/1000;
+    uint64_t cycles = t/667;
+    printf("Product = %f\r\n",f_div);
+    printf("Cycles = %llu\n", cycles);
     
-    // f_sub = f1-f2;
-    // f_mult = f1*f2;
-    // f_div = f1/f2;
-    // printf("\nResults: \n%f+%f=%f \n%f-%f=%f \n%f*%f=%f \n%f/%f=%f\n", f1,f2,f_add, f1,f2,f_sub, f1,f2,f_mult, f1,f2,f_div);
 }
 
 void connectusb(){
