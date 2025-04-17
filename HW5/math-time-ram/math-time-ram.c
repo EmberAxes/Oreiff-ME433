@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
+#include <math.h>
 
 // SPI Defines
 // We are going to use SPI 0, and allocate it to the following GPIO pins
@@ -22,12 +23,13 @@ void connectusb();
 
 static inline void cs_select(uint cs_pin);
 static inline void cs_deselect(uint cs_pin);
+void writeDac(uint8_t *data, int len);
+void inwriteDac(uint8_t *data, int channel, float voltage);
 
 void spi_pi_init();
 void spi_ram_init();
 float read_ram(uint16_t address);
 void write_ram(uint16_t address, float data);
-
 
 int main()
 {
@@ -38,7 +40,16 @@ int main()
     spi_ram_init();
     printf("Pi and Ram initialized.\r\n");
 
-       
+    // Write voltage floats to memory loop
+    int t = 0;
+    float va;
+    uint16_t ad = 0;
+    for (int i = 0; i < 1000; i++) {
+        va = 1.65*sin(4.*M_PI*(t/1000.)) + 1.65;
+        write_ram(ad, va);
+
+        ad += sizeof(float);    // Next address
+        t += 1;                 // Next time step
    
 }
 
@@ -133,6 +144,29 @@ void connectusb(){
     printf("Connected!\n");
 }
 
+// Write to pin
+void writeDac(uint8_t *data, int len){
+    cs_select(DAC_CS);
+    spi_write_blocking(SPI_PORT, data, len); // where data is a uint8_t array with length len
+    cs_deselect(DAC_CS);
+}
+
+// Step 1: Function that takes channel and voltage [0 - 1023] as inputs
+void inwriteDac(uint8_t *data, int channel, float voltage){
+    int len = 2;
+    uint16_t d = 0;
+
+    // Need to put the 16 bit number in the right spot
+    d = d | (channel << 15);    // bit shifting to choose output A
+    d = d | 0b111 << 12;        // we've been told the next 3 bits are all 1
+
+    // Voltage stuff
+    uint16_t v = (voltage * 1023) / 3.3;
+    d = d | v << 2;     // Need the last 2 bits of voltage to be zero
+    data[0] = d >> 8;   // Grab the 4 channel stuff and first 4 voltage bits
+    data[1] = d & 0xFF; // set the final 8 bits;
+}
+
 // // Test 1 success
 // float testin = 12345.;
 // uint16_t a = 0;
@@ -144,19 +178,16 @@ void connectusb(){
 //     printf("Test input: %f\r\n", testin);
 //     printf("Test output: %f\r\n", testout);
 //     printf("\r\n");
-
 //     sleep_ms(1000);
 // }
 
 // // Test 2: Load 3 floats, return 3 floats Success
 // uint16_t address = 0;
 // float test_values[3] = { 123.0f, 456.0f, 789.0f };
-
 // for (int i = 0; i < 3; i++) {
 //     write_ram(address, test_values[i]);
 //     address += sizeof(float);
 // }
-
 // address = 0;
 // for (int i = 0; i < 3; i++) {
 //     float result = read_ram(address);
