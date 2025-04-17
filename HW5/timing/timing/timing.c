@@ -20,40 +20,44 @@ int main()
     for (int i = 0; i < 1000; i++) {
         f_add = f1 + f2;
     }
-    uint64_t t = to_us_since_boot(t1)/1000;
-    uint64_t cycles = t/667;
+    absolute_time_t t2 = get_absolute_time();
+    uint64_t t = (to_us_since_boot(t2)-to_us_since_boot(t1))/1000;
+    float cycles = t/0.00667;
     printf("Sum = %f\r\n",f_add);
-    printf("Cycles = %llu\n", cycles);
+    printf("Cycles = %f\n", cycles);
 
     // Subtraction -------------------------------------------
     t1 = get_absolute_time();
     for (int i = 0; i < 1000; i++) {
         f_sub = f1 - f2;
     }
-    t = to_us_since_boot(t1)/1000;
-    cycles = t/667;
+    t2 = get_absolute_time();
+    t = (to_us_since_boot(t2)-to_us_since_boot(t1))/1000;
+    cycles = t/0.00667;
     printf("Difference = %f\r\n",f_sub);
-    printf("Cycles = %llu\n", cycles);
+    printf("Cycles = %f\n", cycles);
 
     // Multiplication -----------------------------------------
     t1 = get_absolute_time();
     for (int i = 0; i < 1000; i++) {
         f_mult = f1 * f2;
     }
-    t = to_us_since_boot(t1)/1000;
-    cycles = t/667;
+    t2 = get_absolute_time();
+    t = (to_us_since_boot(t2)-to_us_since_boot(t1))/1000;
+    cycles = t/0.00667;
     printf("Product = %f\r\n",f_mult);
-    printf("Cycles = %llu\n", cycles);
+    printf("Cycles = %f\n", cycles);
 
     // Division ------------------------------------------------
     t1 = get_absolute_time();
     for (int i = 0; i < 1000; i++) {
         f_div = f1 / f2;
     }
-    t = to_us_since_boot(t1)/1000;
-    cycles = t/667;
-    printf("Product = %f\r\n",f_div);
-    printf("Cycles = %llu\n", cycles);
+    t2 = get_absolute_time();
+    t = (to_us_since_boot(t2)-to_us_since_boot(t1))/1000;
+    cycles = t/0.00667;
+    printf("Quotient = %f\r\n",f_div);
+    printf("Cycles = %f\n", cycles);
     
 }
 
