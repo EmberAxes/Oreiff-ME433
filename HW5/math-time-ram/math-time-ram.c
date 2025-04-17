@@ -45,7 +45,7 @@ int main()
     float va;
     uint16_t ad = 0;
     for (int i = 0; i < 1000; i++) {
-        va = 1.65*sin(4.*M_PI*(t/1000.)) + 1.65;
+        va = 1.65*sin(2.*M_PI*(t/1000.)) + 1.65;
         write_ram(ad, va);
 
         ad += sizeof(float);    // Next address
@@ -55,12 +55,21 @@ int main()
     ad = 0;
     uint8_t vdata[2];
     float voltage;
+    t = 0;
 
     while (1){
         voltage = read_ram(ad);     // Read the float from RAM
         inwriteDac(vdata, 0, voltage);     // Write to DAC  
         writeDac(vdata, 2);
+        printf("%f\r\n",voltage);
+        ad += sizeof(float);
+        t += 1;
         sleep_ms(1);
+
+        if (t == 1000){     // Reset at end of data
+            ad = 0;
+            t = 1;
+        }
     }
    
 }
