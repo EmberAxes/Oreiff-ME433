@@ -25,8 +25,8 @@ static inline void cs_deselect(uint cs_pin);
 
 void spi_pi_init();
 void spi_ram_init();
-float read_ram(uint16_t address);
-void write_ram(uint16_t address, float data);
+float read_ram(uint16_t *address);
+void write_ram(uint16_t *address, float data);
 
 
 int main()
@@ -75,7 +75,7 @@ void spi_pi_init(){
 
 void spi_ram_init(){
     uint8_t buff[2];
-    buff[0] = 0b00000101;    // Change status register
+    buff[0] = 0b00000001;    // Change status register
     buff[1] = 0b01000000;    // to sequential mode
 
     cs_select(RAM_CS);
@@ -95,7 +95,7 @@ static inline void cs_deselect(uint cs_pin) {
     asm volatile("nop \n nop \n nop"); // FIXME
 }
 
-void write_ram(uint16_t address, float mynum){
+void write_ram(uint16_t *address, float mynum){
     uint8_t buff[7];
     buff[0] = 0b00000010;       // write instruction
     buff[1] = address >> 8;     // first 8 bits of address
@@ -104,9 +104,9 @@ void write_ram(uint16_t address, float mynum){
     union FloatInt num;
     num.f = mynum;
 
-    buff[3] = num.i >> 24;
-    buff[4] = num.i & (0xFF << 16);
-    buff[5] = num.i & (0xFF << 8);
+    buff[3] = (num.i >> 24)&0xFF;
+    buff[4] = (num.i >> 16)&0xFF;
+    buff[5] = (num.i >> 8)&0xFF;
     buff[6] = num.i & 0xFF;
 
     cs_select(RAM_CS);
@@ -115,7 +115,7 @@ void write_ram(uint16_t address, float mynum){
 
 }
 
-float read_ram(uint16_t address){
+float read_ram(uint16_t *address){
     uint8_t out_buff[7], in_buff[7];
     out_buff[0] = 0b00000011;       // Read instruction
     out_buff[1] = address >> 8;     // First 8 bits of address
