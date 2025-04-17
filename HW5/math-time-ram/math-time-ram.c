@@ -38,24 +38,8 @@ int main()
     spi_ram_init();
     printf("Pi and Ram initialized.\r\n");
 
-    // Test 2: Load 3 floats, return 3 floats
-    uint16_t address = 0;
-    float test_values[3] = { 123.0f, 456.0f, 789.0f };
-
-    for (int i = 0; i < 3; i++) {
-        write_ram(address, test_values[i]);
-        address += sizeof(float);
-    }
-
-    address = 0;
-    for (int i = 0; i < 3; i++) {
-        float result = read_ram(address);
-        printf("Read back float %d: %f\r\n", i, result);
-        address += sizeof(float);
-}
-
-
-    
+       
+   
 }
 
 void spi_pi_init(){
@@ -162,4 +146,38 @@ void connectusb(){
 //     printf("\r\n");
 
 //     sleep_ms(1000);
+// }
+
+// // Test 2: Load 3 floats, return 3 floats Success
+// uint16_t address = 0;
+// float test_values[3] = { 123.0f, 456.0f, 789.0f };
+
+// for (int i = 0; i < 3; i++) {
+//     write_ram(address, test_values[i]);
+//     address += sizeof(float);
+// }
+
+// address = 0;
+// for (int i = 0; i < 3; i++) {
+//     float result = read_ram(address);
+//     printf("Read back float %d: %f\r\n", i, result);
+//     address += sizeof(float);
+// }
+
+// // Test 3: Load 10 floats, return 10 floats Success
+// float b = 0;
+// uint16_t ad = 0;
+// for (int i = 0; i < 10; i++) {
+//     write_ram(ad, b);
+//     ad += sizeof(float); 
+//     b += 1.0f;
+// }
+// printf("Floats loaded. \r\n");
+// ad = 0;
+// float b_out;
+// for (int i = 0; i < 10; i++){
+//     b_out = read_ram(ad);
+//     printf("Output: %f\r\n",b_out);
+//     ad += sizeof(float);
+//     sleep_ms(500);
 // }
