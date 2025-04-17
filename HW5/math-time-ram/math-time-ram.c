@@ -50,6 +50,18 @@ int main()
 
         ad += sizeof(float);    // Next address
         t += 1;                 // Next time step
+    }
+
+    ad = 0;
+    uint8_t vdata[2];
+    float voltage;
+
+    while (1){
+        voltage = read_ram(ad);     // Read the float from RAM
+        inwriteDac(vdata, 0, voltage);     // Write to DAC  
+        writeDac(vdata, 2);
+        sleep_ms(1);
+    }
    
 }
 
