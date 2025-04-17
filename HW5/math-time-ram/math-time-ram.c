@@ -61,7 +61,6 @@ int main()
         voltage = read_ram(ad);     // Read the float from RAM
         inwriteDac(vdata, 0, voltage);     // Write to DAC  
         writeDac(vdata, 2);
-        printf("%f\r\n",voltage);
         ad += sizeof(float);
         t += 1;
         sleep_ms(1);
@@ -75,7 +74,7 @@ int main()
 }
 
 void spi_pi_init(){
-    spi_init(SPI_PORT, 1000*1000);
+    spi_init(SPI_PORT, 10000000);
 
     // These are for the DAC
     gpio_set_function(PI_RX, GPIO_FUNC_SPI);
