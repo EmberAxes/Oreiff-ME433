@@ -9,7 +9,7 @@
 #define I2C_SDA 8
 #define I2C_SCL 9
 
-
+void heartbeat();
 
 int main()
 {
@@ -24,8 +24,14 @@ int main()
     gpio_pull_up(I2C_SCL);
     // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c
 
+    gpio_init(25);
+    gpio_set_dir(25,GPIO_OUT);
     while (true) {
         printf("Hello, world!\n");
-        sleep_ms(1000);
+        gpio_put(25,1);
+        sleep_ms(250);
+        gpio_put(25,0);
+        sleep_ms(250);
     }
 }
+
