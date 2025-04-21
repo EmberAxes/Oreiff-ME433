@@ -33,20 +33,23 @@ int main()
     setPin(0, 0x00, 0b01111111);  // This should initialize
                                   // GP0 as input and GP7 as output
 
-    uint8_t test;
-
     while (true) {
         
         // Heartbeat
         gpio_put(25,1);
-        test = readPin(0, 0x09);
-        printf("%d\n",test);
-
+        if (readPin(0, 0x09)){
+            setPin(0, 0x0A, 0b10000000);
+        }else{
+            setPin(0, 0x0A, 0b00000000);
+        };
         sleep_ms(250);
 
         gpio_put(25,0);
-        test = readPin(0, 0x09);
-        printf("%d\n",test);
+        if (readPin(0, 0x09)){
+            setPin(0, 0x0A, 0b10000000);
+        }else{
+            setPin(0, 0x0A, 0b00000000);
+        };
         sleep_ms(250);
     }
 }
