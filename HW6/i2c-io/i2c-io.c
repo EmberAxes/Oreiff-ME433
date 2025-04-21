@@ -10,7 +10,7 @@
 #define I2C_SCL 5
 
 void setPin(unsigned char addr, unsigned char reg, unsigned char val);
-unsigned char readPin(unsigned char addr, unsigned char reg);
+uint8_t readPin(unsigned char addr, uint8_t reg);
 
 int main()
 {
@@ -33,17 +33,20 @@ int main()
     setPin(0, 0x00, 0b01111111);  // This should initialize
                                   // GP0 as input and GP7 as output
 
-    unsigned char test;
+    uint8_t test;
 
     while (true) {
         
         // Heartbeat
         gpio_put(25,1);
-        test = readPin(0, 0x09)
+        test = readPin(0, 0x09);
+        printf("%d\n",test);
+
         sleep_ms(250);
 
         gpio_put(25,0);
-        
+        test = readPin(0, 0x09);
+        printf("%d\n",test);
         sleep_ms(250);
     }
 }
@@ -59,15 +62,18 @@ void setPin(unsigned char addr, unsigned char reg, unsigned char val){
     i2c_write_blocking(i2c_default, addr, buff, 2, false);
 }
 
-unsigned char readPin(unsigned char addr, unsigned char reg){
+uint8_t readPin(unsigned char addr, uint8_t reg){
     addr = 0x20 | (addr & 0b111);
-    i2c_write_blocking(i2c_default, addr, reg, 1, true);
+    uint8_t regist[1];
+
+    regist[0] = reg;
+    i2c_write_blocking(i2c_default, addr, regist, 1, true);
     
-    unsigned char buff;
+    uint8_t buff[1];
     i2c_read_blocking(i2c_default, addr, buff, 1, false);
 
-    buff = buff & 0b1; // hardcoding which GPIO bit to look at
-    return(buff);
+    buff[0] = buff[0] & 0b00000001;
+    return(buff[0]);
 }
 
 //setPin(0, 0x0A, 0b10000000);    // Turn GP7 on
