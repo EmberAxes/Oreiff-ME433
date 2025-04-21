@@ -48,10 +48,11 @@ int main()
 
 void setPin(unsigned char addr, unsigned char reg, unsigned char val){
     unsigned char buff[2];
-    unsigned char address;
-    address = 0x20;   // hardcode address
+    // unsigned char address;
+    // address = 0x20;   // base address
+    addr = 0x20 | (addr & 0b111);  // 0 1 0 0 a d r 0  The 0 means write
     buff[0] = reg;
     buff[1] = val;
 
-    i2c_write_blocking(i2c_default, address, buff, 2, false);
+    i2c_write_blocking(i2c_default, addr, buff, 2, false);
 }
