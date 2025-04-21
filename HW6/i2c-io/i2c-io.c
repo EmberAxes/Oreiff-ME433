@@ -6,8 +6,8 @@
 // This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
 // Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
 #define I2C_PORT i2c0
-#define I2C_SDA 8
-#define I2C_SCL 9
+#define I2C_SDA 4
+#define I2C_SCL 5
 
 void setPin(unsigned char addr, unsigned char reg, unsigned char val);
 unsigned char readPin(unsigned char address, unsigned char register);
@@ -37,20 +37,21 @@ int main()
         
         // Heartbeat
         gpio_put(25,1);
+        setPin(0, 0x0A, 0b10000000);    // Turn GP7 on
         sleep_ms(250);
+
         gpio_put(25,0);
+        setPin(0, 0x0A, 0b00000000);    // Turn GP7 off
         sleep_ms(250);
     }
 }
 
 void setPin(unsigned char addr, unsigned char reg, unsigned char val){
     unsigned char buff[2];
-    unsigned char address = 0;
-    address = (1 << 7) | (addr << 1);  // 0 1 0 0 a d r 0  The 0 means write
+    unsigned char address;
+    address = 0x20;   // hardcode address
     buff[0] = reg;
     buff[1] = val;
 
-    gpio_put(I2C_SCL, 0);       // Set SCL low
-    i2c_write_blocking(i2c_default, addr, buff, 2, false);
-    gpio_put(I2C_SCL, 1);       // set back to high
+    i2c_write_blocking(i2c_default, address, buff, 2, false);
 }
