@@ -33,11 +33,13 @@ int main()
     setPin(0, 0x00, 0b01111111);  // This should initialize
                                   // GP0 as input and GP7 as output
 
+    unsigned char test;
+
     while (true) {
         
         // Heartbeat
         gpio_put(25,1);
-        
+        test = readPin(0, 0x09)
         sleep_ms(250);
 
         gpio_put(25,0);
@@ -64,6 +66,7 @@ unsigned char readPin(unsigned char addr, unsigned char reg){
     unsigned char buff;
     i2c_read_blocking(i2c_default, addr, buff, 1, false);
 
+    buff = buff & 0b1; // hardcoding which GPIO bit to look at
     return(buff);
 }
 
