@@ -10,7 +10,7 @@
 #define I2C_SCL 5
 
 void setPin(unsigned char addr, unsigned char reg, unsigned char val);
-unsigned char readPin(unsigned char address, unsigned char register);
+unsigned char readPin(unsigned char addr, unsigned char reg);
 
 int main()
 {
@@ -37,11 +37,11 @@ int main()
         
         // Heartbeat
         gpio_put(25,1);
-        setPin(0, 0x0A, 0b10000000);    // Turn GP7 on
+        
         sleep_ms(250);
 
         gpio_put(25,0);
-        setPin(0, 0x0A, 0b00000000);    // Turn GP7 off
+        
         sleep_ms(250);
     }
 }
@@ -56,3 +56,16 @@ void setPin(unsigned char addr, unsigned char reg, unsigned char val){
 
     i2c_write_blocking(i2c_default, addr, buff, 2, false);
 }
+
+unsigned char readPin(unsigned char addr, unsigned char reg){
+    addr = 0x20 | (addr & 0b111);
+    i2c_write_blocking(i2c_default, addr, reg, 1, true);
+    
+    unsigned char buff;
+    i2c_read_blocking(i2c_default, addr, buff, 1, false);
+
+    return(buff);
+}
+
+//setPin(0, 0x0A, 0b10000000);    // Turn GP7 on
+//setPin(0, 0x0A, 0b00000000);    // Turn GP7 off
