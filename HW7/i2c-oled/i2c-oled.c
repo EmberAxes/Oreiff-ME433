@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+#include "ssd1306.h"
 
 // I2C defines
 // This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
@@ -38,7 +39,7 @@ int main()
         sleep_ms(500);
 
         gpio_put(25,0);
-        ssd1306_drawPixl(64,16,0);
+        ssd1306_drawPixel(64,16,0);
         sleep_ms(500);
     }
 }
