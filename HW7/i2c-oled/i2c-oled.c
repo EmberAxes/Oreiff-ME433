@@ -36,10 +36,12 @@ int main()
     while (true) {
         gpio_put(25,1);
         ssd1306_drawPixel(64,16,1);
-        sleep_ms(500);
+        ssd1306_update();
+        sleep_ms(1000);
 
         gpio_put(25,0);
         ssd1306_drawPixel(64,16,0);
-        sleep_ms(500);
+        ssd1306_update();
+        sleep_ms(1000);
     }
 }
