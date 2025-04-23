@@ -22,10 +22,23 @@ int main()
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA);
     gpio_pull_up(I2C_SCL);
-    // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c
+    
+    // Heartbeat initialized
+    gpio_init(25);
+    gpio_set_dir(25,GPIO_OUT);
+
+    // display setup
+    ssd1306_setup();
+    ssd1306_clear();
+    ssd1306_update();
 
     while (true) {
-        printf("Hello, world!\n");
-        sleep_ms(1000);
+        gpio_put(25,1);
+        ssd1306_drawPixel(64,16,1);
+        sleep_ms(500);
+
+        gpio_put(25,0);
+        ssd1306_drawPixl(64,16,0);
+        sleep_ms(500);
     }
 }
