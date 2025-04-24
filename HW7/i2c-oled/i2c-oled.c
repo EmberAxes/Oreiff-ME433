@@ -41,27 +41,47 @@ int main()
     ssd1306_clear();
     ssd1306_update();
 
-    char message[50];
+    char message[50], fps[30];
+    float volts;
+    unsigned int t1, t2, tdiff;
 
     while (true) {
 
-        float volts = (adc_read() * 3.3) / (1 << 12);
-        sprintf(message, "Voltage = %.3f", volts); 
-        drawMessage(20,10,message); // draw starting at x=20,y=10  
+        volts = (adc_read() * 3.3) / (1 << 12);      // Convert adc to voltage
+
+        t1 = to_us_since_boot(get_absolute_time());  // start timer
+        ssd1306_clear();                             // clear display
+        sprintf(message, "Voltage = %.3f", volts);   // put volts into string
+        drawMessage(20,10,message);                  // display string
+        ssd1306_update();                            // update screen
+        t2 = to_us_since_boot(get_absolute_time());  // stop timer
+        
+        tdiff = t2 - t1;
+        sprintf(fps, "FPS = %.5f", 1000000.0 / tdiff);
+        drawMessage(20,25,fps);
         ssd1306_update();
+
         gpio_put(25,1);
-        sleep_ms(500);
+        sleep_ms(250);
+        
+        //-----------------------------------------------------------------------
+        volts = (adc_read() * 3.3) / (1 << 12);
 
-        float volts = (adc_read() * 3.3) / (1 << 12);
+        t1 = to_us_since_boot(get_absolute_time());
+        ssd1306_clear(); 
         sprintf(message, "Voltage = %.3f", volts); 
         drawMessage(20,10,message); // draw starting at x=20,y=10  
         ssd1306_update();
+        t2 = to_us_since_boot(get_absolute_time());
+        
+        tdiff = t2 - t1;
+        sprintf(fps, "FPS = %.5f", 1000000.0 / tdiff);
+        drawMessage(20,25,fps);
+        ssd1306_update();
+
         gpio_put(25,0);
-        sleep_ms(500);
-
-        
-
-        
+        sleep_ms(250);
+       
     }
 }
 
