@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+#include "hardware/adc.h"
 #include "ssd1306.h"
 #include "font.h"
 
@@ -30,31 +31,35 @@ int main()
     gpio_init(25);
     gpio_set_dir(25,GPIO_OUT);
 
+    // ADC initialized
+    adc_init();                 // init the adc module
+    adc_gpio_init(26);          // set ADC0 pin to be adc input instead of GPIO
+    adc_select_input(0);        // select to read from ADC0
+
     // display setup
     ssd1306_setup();
     ssd1306_clear();
     ssd1306_update();
 
     while (true) {
-        char m[20];
+
+        uint16_t result = adc_read();   // Max is 4095 = 3.3 V
+        float volts = (result * 3.3) / (1 << 12);
+        char message[50]; 
+        sprintf(message, "my var = %.3f", volts); 
+
+        drawMessage(20,10,message); // draw starting at x=20,y=10  
 
         gpio_put(25,1);
-        sprintf(m,"hello there");
-        drawmessage(10,10,m);
-        ssd1306_update();
         sleep_ms(1000);
-
-        ssd1306_clear();
-        ssd1306_update();
 
         gpio_put(25,0);
-        sprintf(m,"General Kenobi");
-        drawmessage(10,10,m);
-        ssd1306_update();
         sleep_ms(1000);
 
         ssd1306_clear();
         ssd1306_update();
+
+        
     }
 }
 
@@ -71,7 +76,7 @@ void drawLetter(int x, int y, char c){
     }
 }
 
-void drawmessage(int x, int y, char *m){
+void drawMessage(int x, int y, char *m){
     int i = 0;   // Start at the first letter
     while(m[i] != 0){       // While it is NOT ASCII null
         drawLetter(x+i*6, y, m[i]);

@@ -56,6 +56,7 @@ target_include_directories(i2c-oled PRIVATE
 # Add any user requested libraries
 target_link_libraries(i2c-oled 
         hardware_i2c
+        hardware_adc
         )
 
 pico_add_extra_outputs(i2c-oled)
