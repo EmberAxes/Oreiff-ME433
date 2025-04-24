@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "ssd1306.h"
+#include "font.h"
 
 // I2C defines
 // This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
@@ -10,7 +11,8 @@
 #define I2C_SDA 4
 #define I2C_SCL 5
 
-
+void drawLetter(int x, int y, char c);
+void drawmessage(int x, int y, char *m);
 
 int main()
 {
@@ -43,5 +45,18 @@ int main()
         ssd1306_drawPixel(64,16,0);
         ssd1306_update();
         sleep_ms(1000);
+    }
+}
+
+void drawLetter(int x, int y, char c){
+    int j;
+    for (j=0;j<5;j++){      // Every ascii character is 5 columns
+        char col = ASCII[c-0x20][0];
+
+        int i;
+        for (i=0;i<8;i++){  // Each column is 8 bits
+            char bit = (col >> i)&0b1;      // Checking the bit status
+            ssd1306_drawPixel(x+j, y+i, bit)
+        }
     }
 }
