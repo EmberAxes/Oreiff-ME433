@@ -13,7 +13,7 @@
 #define I2C_SCL 5
 
 void drawLetter(int x, int y, char c);
-void drawmessage(int x, int y, char *m);
+void drawMessage(int x, int y, char *m);
 
 int main()
 {
@@ -41,23 +41,25 @@ int main()
     ssd1306_clear();
     ssd1306_update();
 
+    char message[50];
+
     while (true) {
 
-        uint16_t result = adc_read();   // Max is 4095 = 3.3 V
-        float volts = (result * 3.3) / (1 << 12);
-        char message[50]; 
-        sprintf(message, "my var = %.3f", volts); 
-
+        float volts = (adc_read() * 3.3) / (1 << 12);
+        sprintf(message, "Voltage = %.3f", volts); 
         drawMessage(20,10,message); // draw starting at x=20,y=10  
-
-        gpio_put(25,1);
-        sleep_ms(1000);
-
-        gpio_put(25,0);
-        sleep_ms(1000);
-
-        ssd1306_clear();
         ssd1306_update();
+        gpio_put(25,1);
+        sleep_ms(500);
+
+        float volts = (adc_read() * 3.3) / (1 << 12);
+        sprintf(message, "Voltage = %.3f", volts); 
+        drawMessage(20,10,message); // draw starting at x=20,y=10  
+        ssd1306_update();
+        gpio_put(25,0);
+        sleep_ms(500);
+
+        
 
         
     }
