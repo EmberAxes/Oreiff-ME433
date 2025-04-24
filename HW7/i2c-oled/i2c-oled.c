@@ -36,27 +36,45 @@ int main()
     ssd1306_update();
 
     while (true) {
+        char m[20];
+
         gpio_put(25,1);
-        ssd1306_drawPixel(64,16,1);
+        sprintf(m,"hello there");
+        drawmessage(10,10,m);
         ssd1306_update();
         sleep_ms(1000);
 
+        ssd1306_clear();
+        ssd1306_update();
+
         gpio_put(25,0);
-        ssd1306_drawPixel(64,16,0);
+        sprintf(m,"General Kenobi");
+        drawmessage(10,10,m);
         ssd1306_update();
         sleep_ms(1000);
+
+        ssd1306_clear();
+        ssd1306_update();
     }
 }
 
 void drawLetter(int x, int y, char c){
     int j;
     for (j=0;j<5;j++){      // Every ascii character is 5 columns
-        char col = ASCII[c-0x20][0];
+        char col = ASCII[c-0x20][j];
 
         int i;
         for (i=0;i<8;i++){  // Each column is 8 bits
             char bit = (col >> i)&0b1;      // Checking the bit status
-            ssd1306_drawPixel(x+j, y+i, bit)
+            ssd1306_drawPixel(x+j, y+i, bit);
         }
+    }
+}
+
+void drawmessage(int x, int y, char *m){
+    int i = 0;   // Start at the first letter
+    while(m[i] != 0){       // While it is NOT ASCII null
+        drawLetter(x+i*6, y, m[i]);
+        i++;
     }
 }
