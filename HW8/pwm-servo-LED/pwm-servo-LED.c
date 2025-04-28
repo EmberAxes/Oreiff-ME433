@@ -5,7 +5,10 @@
 #define LEDPin 25 // the built in LED on the Pico
 #define SERVOPin 15
 
+void connectusb();
+
 int main(){
+    connectusb();
     stdio_init_all();
 
     gpio_init(SERVOPin);
@@ -18,8 +21,26 @@ int main(){
     pwm_set_enabled(slice_num, true);
 
     while (true){
-        pwm_set_gpio_level(SERVOPin, wrap*0.025);
+
+        // 0 - 180
+        // 0.025 - 0.125   difference of 0.1
+        float angle;
+        printf("Enter an angle between 0 and 180: \r\n");
+        scanf("%f",&angle);
+        printf("Angle: %f\r\n",angle);
+
+        uint16_t setpwm;
+        setpwm = ((angle / 180.0)*0.1 + 0.025) * wrap;
+        pwm_set_gpio_level(SERVOPin, setpwm);
     }
+}
+
+void connectusb(){
+    stdio_init_all();
+    while (!stdio_usb_connected()) {
+        sleep_ms(100);
+    }
+    printf("Connected!\n");
 }
 
 /*
