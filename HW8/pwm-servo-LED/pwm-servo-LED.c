@@ -20,18 +20,35 @@ int main(){
     pwm_set_wrap(slice_num,wrap);
     pwm_set_enabled(slice_num, true);
 
+    float angle = 0;
+    uint16_t setpwm;
+    float sec = 2.;         // How long to go 180 degrees?
+    float inc = 0.5;        // Angle increment
+    float pause;
+
     while (true){
 
         // 0 - 180
         // 0.025 - 0.125   difference of 0.1
-        float angle;
-        printf("Enter an angle between 0 and 180: \r\n");
-        scanf("%f",&angle);
-        printf("Angle: %f\r\n",angle);
+        
 
-        uint16_t setpwm;
-        setpwm = ((angle / 180.0)*0.1 + 0.025) * wrap;
-        pwm_set_gpio_level(SERVOPin, setpwm);
+        while (angle<180){
+            pause = (180./inc) / (1000*sec);
+            setpwm = ((angle / 180.0)*0.1 + 0.025) * wrap;
+            pwm_set_gpio_level(SERVOPin, setpwm);
+            angle+=0.5;
+            sleep_ms(pause);
+        }
+        
+        while (angle>0){
+            pause = (180./inc) / (1000*sec);
+            setpwm = ((angle / 180.0)*0.1 + 0.025) * wrap;
+            pwm_set_gpio_level(SERVOPin, setpwm);
+            angle-=0.5;
+            sleep_ms(pause);
+        }
+
+        
     }
 }
 
