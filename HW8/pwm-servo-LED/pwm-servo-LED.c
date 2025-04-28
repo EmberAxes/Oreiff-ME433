@@ -3,7 +3,7 @@
 #include "hardware/pwm.h"
 
 #define LEDPin 25 // the built in LED on the Pico
-#define SERVOPin 28
+#define SERVOPin 15
 
 int main(){
     stdio_init_all();
@@ -11,14 +11,14 @@ int main(){
     gpio_init(SERVOPin);
     gpio_set_function(SERVOPin, GPIO_FUNC_PWM);
     uint slice_num = pwm_gpio_to_slice_num(SERVOPin);
-    float div = 1;
+    float div = 60;
     pwm_set_clkdiv(slice_num, div);
     uint16_t wrap = 50000;
     pwm_set_wrap(slice_num,wrap);
     pwm_set_enabled(slice_num, true);
-    
+
     while (true){
-        pwm_set_gpio_level(SERVOPin, 1);
+        pwm_set_gpio_level(SERVOPin, wrap*0.025);
     }
 }
 
