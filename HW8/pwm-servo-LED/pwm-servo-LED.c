@@ -3,10 +3,40 @@
 #include "hardware/pwm.h"
 
 #define LEDPin 25 // the built in LED on the Pico
+#define SERVOPin 28
 
 int main(){
     stdio_init_all();
 
+    gpio_init(SERVOPin);
+    gpio_set_function(SERVOPin, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(SERVOPin);
+    float div = 1;
+    pwm_set_clkdiv(slice_num, div);
+    uint16_t wrap = 50000;
+    pwm_set_wrap(slice_num,wrap);
+    pwm_set_enabled(slice_num, true);
+    
+    while (true){
+        pwm_set_gpio_level(SERVOPin, 1);
+    }
+}
+
+/*
+Can only move 0 - 180 degrees
+3 wires: Brown = ground, red = voltage, orange = PWM. Use 5V from VBUS
+Servo can only be between 2.5 and 12.5
+Set PWM for 50000
+Call function so servo moves from 0 to 180 and back in 4 seconds
+Function: set angle, turn angle into PWM
+
+Say what 16-bit number (65535) number to count up to
+- Divisor is a float
+- Counter: 150000000/(divisor)/(speed I want to go)
+*/
+
+
+/* PWM Test Success
     gpio_init(LEDPin);
 
     gpio_set_function(LEDPin, GPIO_FUNC_PWM); // Set the LED Pin to be PWM
@@ -27,5 +57,4 @@ int main(){
         pwm_set_gpio_level(LEDPin, wrap / 4);
         sleep_ms(1000);
     }
-}
-
+*/
