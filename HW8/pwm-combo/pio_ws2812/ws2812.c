@@ -100,6 +100,7 @@ int main() {
     int i,j;
     j = 0;
     angle = j;
+    float b = 0.025;
 
     while (1) {
         if (j==360){
@@ -111,10 +112,10 @@ int main() {
             angle = j;
         }
 
-        c[3] = HSBtoRGB(j % 360,1,0.05);
-        c[2] = HSBtoRGB((j+90) % 360,1,0.05);
-        c[1] = HSBtoRGB((j+180) % 360,1,0.05);
-        c[0] = HSBtoRGB((j+270) % 360,1,0.05);
+        c[3] = HSBtoRGB(j % 360,1,b);
+        c[2] = HSBtoRGB((j+90) % 360,1,b);
+        c[1] = HSBtoRGB((j+180) % 360,1,b);
+        c[0] = HSBtoRGB((j+270) % 360,1,b);
 
         for(i=0;i<NUM_PIXELS;i++){
             put_pixel(pio, sm, urgb_u32(c[i].r, c[i].g, c[i].b)); // assuming you've made arrays of colors to send
