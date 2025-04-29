@@ -51,14 +51,12 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
             (uint32_t) (b);
 }
 
-static inline uint32_t urgbw_u32(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
-    return
-            ((uint32_t) (g) << 8) |
-            ((uint32_t) (r) << 16) |
-            ((uint32_t) (w) << 24) |
-            (uint32_t) (b);
-}
-
+// link three 8bit colors together
+typedef struct {
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+} wsColor; 
 
 int main() {
     //set_sys_clock_48();
@@ -78,15 +76,15 @@ int main() {
 
     ws2812_program_init(pio, sm, offset, WS2812_PIN, 800000, IS_RGBW);
 
-    int t = 0;
-    int r[1], g[1], b[1];
-    r[0] = 0;
-    g[0] = 255;
-    b[0] = 0;
+    wsColor c;
+    c.r = 255;
+    c.g = 0;
+    c.b = 0;
+
     while (1) {
         int i;
         for(i=0;i<NUM_PIXELS;i++){
-            put_pixel(pio, sm, urgb_u32(r[i], g[i], b[i])); // assuming you've made arrays of colors to send
+            put_pixel(pio, sm, urgb_u32(c.r, c.g, c.b)); // assuming you've made arrays of colors to send
         }
         sleep_ms(1); // wait at least the reset time
     }
