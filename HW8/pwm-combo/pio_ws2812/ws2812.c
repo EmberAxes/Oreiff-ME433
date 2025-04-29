@@ -11,6 +11,7 @@
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
+#include "hardware/pwm.h"
 
 /**
  * NOTE:
@@ -27,6 +28,7 @@
  */
 #define IS_RGBW false
 #define NUM_PIXELS 4
+#define SERVOPin 15
 
 #ifdef PICO_DEFAULT_WS2812_PIN
 #define WS2812_PIN PICO_DEFAULT_WS2812_PIN
@@ -63,6 +65,22 @@ wsColor HSBtoRGB(float hue, float sat, float brightness);
 int main() {
     //set_sys_clock_48();
     stdio_init_all();
+
+    // servo setup
+    gpio_init(SERVOPin);
+    gpio_set_function(SERVOPin, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(SERVOPin);
+    float div = 60;
+    pwm_set_clkdiv(slice_num, div);
+    uint16_t wrap = 50000;
+    pwm_set_wrap(slice_num,wrap);
+    pwm_set_enabled(slice_num, true);
+
+    float angle = 0;
+    uint16_t setpwm;
+
+    //--------------------------
+
     printf("WS2812 Smoke Test, using pin %d\n", WS2812_PIN);
 
     // todo get free sm
@@ -81,11 +99,18 @@ int main() {
     wsColor c[4];
     int i,j;
     j = 0;
+    angle = j;
 
     while (1) {
         if (j==360){
             j = 0;
         }
+        if (j > 180){
+            angle = 360-j;
+        }else{
+            angle = j;
+        }
+
         c[3] = HSBtoRGB(j % 360,1,0.05);
         c[2] = HSBtoRGB((j+90) % 360,1,0.05);
         c[1] = HSBtoRGB((j+180) % 360,1,0.05);
@@ -94,8 +119,12 @@ int main() {
         for(i=0;i<NUM_PIXELS;i++){
             put_pixel(pio, sm, urgb_u32(c[i].r, c[i].g, c[i].b)); // assuming you've made arrays of colors to send
         }
+        
+        setpwm = ((angle / 180.0)*0.1 + 0.025)*wrap;
+        pwm_set_gpio_level(SERVOPin, setpwm);
+        
         j++;
-        sleep_ms(10); // wait at least the reset time
+        sleep_ms(5000/360); // wait at least the reset time
     }
 }
 
