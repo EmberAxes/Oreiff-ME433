@@ -26,7 +26,7 @@
  *
  */
 #define IS_RGBW false
-#define NUM_PIXELS 1
+#define NUM_PIXELS 4
 
 #ifdef PICO_DEFAULT_WS2812_PIN
 #define WS2812_PIN PICO_DEFAULT_WS2812_PIN
@@ -78,7 +78,7 @@ int main() {
 
     ws2812_program_init(pio, sm, offset, WS2812_PIN, 800000, IS_RGBW);
 
-    wsColor c;
+    wsColor c[4];
     int i,j;
     j = 0;
 
@@ -86,12 +86,16 @@ int main() {
         if (j==360){
             j = 0;
         }
-        c = HSBtoRGB(j,1,0.1);
+        c[3] = HSBtoRGB(j % 360,1,0.05);
+        c[2] = HSBtoRGB((j+90) % 360,1,0.05);
+        c[1] = HSBtoRGB((j+180) % 360,1,0.05);
+        c[0] = HSBtoRGB((j+270) % 360,1,0.05);
+
         for(i=0;i<NUM_PIXELS;i++){
-            put_pixel(pio, sm, urgb_u32(c.r, c.g, c.b)); // assuming you've made arrays of colors to send
+            put_pixel(pio, sm, urgb_u32(c[i].r, c[i].g, c[i].b)); // assuming you've made arrays of colors to send
         }
         j++;
-        sleep_ms(1); // wait at least the reset time
+        sleep_ms(10); // wait at least the reset time
     }
 }
 
