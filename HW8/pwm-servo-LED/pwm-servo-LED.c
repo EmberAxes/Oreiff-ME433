@@ -28,10 +28,10 @@ int main(){
 
     while (true){
 
+                
         // 0 - 180
         // 0.025 - 0.125   difference of 0.1
         
-
         while (angle<180){
             pause = (180./inc) / (1000*sec);
             setpwm = ((angle / 180.0)*0.1 + 0.025) * wrap;
