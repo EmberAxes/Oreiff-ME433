@@ -26,6 +26,9 @@ void core1_entry() {
 }
 
 int main() {
+    while (!stdio_usb_connected()) {       //Wait until port open
+        sleep_ms(100);
+    }
     stdio_init_all();
     printf("Hello, multicore!\n");
 

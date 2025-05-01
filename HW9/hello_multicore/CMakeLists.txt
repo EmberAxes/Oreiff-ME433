@@ -35,14 +35,16 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(hello_multicore
+add_executable(
         multicore.c
         )
 
 # Add pico_multicore which is required for multicore functionality
 target_link_libraries(hello_multicore
         pico_stdlib
-        pico_multicore)
+        pico_multicore
+        pico_enable_stdio_uart(hello_multicore 0)
+        pico_enable_stdio_usb(hello_multicore 1))
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(hello_multicore)
