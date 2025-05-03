@@ -18,7 +18,7 @@ def make_csv(file):
             data1.append(float(row[1])) # second column
 
     # print the data to verify it was read
-    print(len(t), ", ",len(data1))
+    # print(len(t), ", ",len(data1))
     
     return (t, data1)
 
@@ -29,8 +29,20 @@ tD,sD = make_csv("sigD.csv")
 
 # Question 2: Practice plotting -----------------------------------------------
 
-plt.plot(tA,sA,'b',)
-plt.xlabel('Time [s]')
-plt.ylabel('Signal')
-plt.title('Signal vs Time')
-plt.show()
+# plt.plot(tA,sA,'b',)
+# plt.xlabel('Time [s]')
+# plt.ylabel('Signal')
+# plt.title('Signal vs Time')
+# plt.show()
+
+# Question 3: Calculating sample rate
+rate_A = len(tA)/tA[-1]
+rate_B = len(tB)/tB[-1]
+rate_C = len(tC)/tC[-1]
+rate_D = len(tD)/tD[-1]
+
+print("Sample rate A: ",rate_A)
+print("Sample rate B: ",rate_B)
+print("Sample rate C: ",rate_C)
+print("Sample rate D: ",rate_D)
+input("wait")
