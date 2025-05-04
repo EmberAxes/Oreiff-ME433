@@ -95,7 +95,13 @@ def move_average(data,avg_pts):
     
     return (avgd_data)
 
-msigA = move_average(sA,20)
+msigA = move_average(sA,75)
+msigB = move_average(sB,75)
+msigC = move_average(sC,75)
+msigD = move_average(sD,75)
 
-basic_fft(rate_A,tA,[sA,msigA],'Signal A vs Time')
+basic_fft(rate_A,tA,[sA,msigA],'Signal A vs Time, 75 Averaged')
+basic_fft(rate_B,tB,[sB,msigB],'Signal B vs Time, 75 Averaged')
+basic_fft(rate_C,tC,[sC,msigC],'Signal C vs Time, 75 Averaged')
+basic_fft(rate_D,tD,[sD,msigD],'Signal D vs Time, 75 Averaged')
 
