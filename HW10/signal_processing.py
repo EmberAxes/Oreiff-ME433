@@ -50,24 +50,28 @@ rate_D = len(tD)/tD[-1]
     # input("wait")
 
 # Question 4: Signal vs time and FFT ------------------------------------------
-def basic_fft(sample_rate,time_vector,signal_vector,title):
-    Fs = sample_rate # sample rate
-    Ts = 1.0/Fs; # sampling interval
-    y = signal_vector # the data to make the fft from
-    n = len(y) # length of the signal
-    k = np.arange(n)
-    T = n/Fs
-    frq = k/T # two sides frequency range
-    frq = frq[range(int(n/2))] # one side frequency range
-    Y = np.fft.fft(y)/n # fft computing and normalization
-    Y = Y[range(int(n/2))]
-
+def basic_fft(sample_rate,time_vector,signal_vectors,title):
+    colors = ['k','r']
     fig, (ax1, ax2) = plt.subplots(2, 1)
-    ax1.plot(time_vector,y,'b',linewidth = 1)
+    
+    for i, signal in enumerate(signal_vectors):
+        Fs = sample_rate # sample rate
+        Ts = 1.0/Fs; # sampling interval
+        y = signal # the data to make the fft from
+        n = len(y) # length of the signal
+        k = np.arange(n)
+        T = n/Fs
+        frq = k/T # two sides frequency range
+        frq = frq[range(int(n/2))] # one side frequency range
+        Y = np.fft.fft(y)/n # fft computing and normalization
+        Y = Y[range(int(n/2))]
+
+        ax1.plot(time_vector,y,colors[i],linewidth = 1)
+        ax2.loglog(frq,abs(Y),colors[i],linewidth = 1) # plotting the fft
+
     ax1.set_xlabel('Time (sec)')
     ax1.set_ylabel('Amplitude')
     ax1.title.set_text(title)
-    ax2.loglog(frq,abs(Y),'b',linewidth = 1) # plotting the fft
     ax2.set_xlabel('Freq (Hz)')
     ax2.set_ylabel('|Y(freq)|')
     ax2.title.set_text('Fourier Transform')
@@ -78,3 +82,20 @@ def basic_fft(sample_rate,time_vector,signal_vector,title):
 # basic_fft(rate_B,tB,sB,'Signal B vs Time')
 # basic_fft(rate_C,tC,sC,'Signal C vs Time')
 # basic_fft(rate_D,tD,sD,'Signal D vs Time')
+
+# Question 5: Moving average filter -------------------------------------------
+
+def move_average(data,avg_pts):
+    avgd_data = []
+    long_data = [0]*(avg_pts-1) + data
+
+    for i in range(avg_pts-1,len(long_data)):
+        avg_chunk = np.mean(long_data[i-(avg_pts-1):i])
+        avgd_data.append(avg_chunk)
+    
+    return (avgd_data)
+
+msigA = move_average(sA,20)
+
+basic_fft(rate_A,tA,[sA,msigA],'Signal A vs Time')
+
