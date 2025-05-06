@@ -95,13 +95,35 @@ def move_average(data,avg_pts):
     
     return (avgd_data)
 
-msigA = move_average(sA,75)
-msigB = move_average(sB,75)
-msigC = move_average(sC,75)
-msigD = move_average(sD,75)
+# msigA = move_average(sA,75)
+# msigB = move_average(sB,75)
+# msigC = move_average(sC,75)
+# msigD = move_average(sD,75)
 
-basic_fft(rate_A,tA,[sA,msigA],'Signal A vs Time, 75 Averaged')
-basic_fft(rate_B,tB,[sB,msigB],'Signal B vs Time, 75 Averaged')
-basic_fft(rate_C,tC,[sC,msigC],'Signal C vs Time, 75 Averaged')
-basic_fft(rate_D,tD,[sD,msigD],'Signal D vs Time, 75 Averaged')
+# basic_fft(rate_A,tA,[sA,msigA],'Signal A vs Time, 75 Averaged')
+# basic_fft(rate_B,tB,[sB,msigB],'Signal B vs Time, 75 Averaged')
+# basic_fft(rate_C,tC,[sC,msigC],'Signal C vs Time, 75 Averaged')
+# basic_fft(rate_D,tD,[sD,msigD],'Signal D vs Time, 75 Averaged')
 
+# Question 6: IIR filter -------------------------------------------
+
+def iir(data,A):
+    '''
+    If data is noisy, make A large (0-1).
+    '''
+    B = 1-A
+    iir_average = []
+
+    for i in range(len(data)):
+        if i == 0:
+            iir_average.append(data[i])
+        else:
+            prev_avg = np.mean(data[0:i])
+            new_avg = A*prev_avg + B*data[i]
+            iir_average.append(new_avg)
+    
+    return (iir_average)
+
+iirA = iir(sA,0.5)
+
+basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.5, B = 0.5')
