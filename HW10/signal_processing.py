@@ -124,13 +124,13 @@ def iir(data,A):
 
     return (iir_average)
 
-A = 0.99
+A = 0.98
 iirA = iir(sA,A)
 iirB = iir(sB,A)
 iirC = iir(sC,A)
 iirD = iir(sD,A)
 
-basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.99, B = 0.01')
-basic_fft(rate_B,tB,[sB,iirB],'Signal A vs Time, A = 0.99, B = 0.01')
-basic_fft(rate_C,tC,[sC,iirC],'Signal A vs Time, A = 0.99, B = 0.01')
-basic_fft(rate_D,tD,[sD,iirD],'Signal A vs Time, A = 0.99, B = 0.01')
+basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.98, B = 0.02')
+basic_fft(rate_B,tB,[sB,iirB],'Signal B vs Time, A = 0.98, B = 0.02')
+basic_fft(rate_C,tC,[sC,iirC],'Signal C vs Time, A = 0.98, B = 0.02')
+basic_fft(rate_D,tD,[sD,iirD],'Signal D vs Time, A = 0.98, B = 0.02')
