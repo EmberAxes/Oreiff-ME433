@@ -112,18 +112,19 @@ def iir(data,A):
     If data is noisy, make A large (0-1).
     '''
     B = 1-A
-    iir_average = []
+    iir_average = [0]*len(data)
 
     for i in range(len(data)):
         if i == 0:
-            iir_average.append(data[i])
+            iir_average[i] = data[i]
         else:
-            prev_avg = np.mean(data[0:i])
+            prev_avg = iir_average[i-1]
             new_avg = A*prev_avg + B*data[i]
-            iir_average.append(new_avg)
-    
+            iir_average[i] = new_avg
+
     return (iir_average)
 
 iirA = iir(sA,0.5)
-
-basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.5, B = 0.5')
+print('iirA    ', iirA[0:10])
+print('signal A', sA[0:10])
+# basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.5, B = 0.5')
