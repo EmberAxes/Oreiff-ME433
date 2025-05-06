@@ -124,7 +124,13 @@ def iir(data,A):
 
     return (iir_average)
 
-iirA = iir(sA,0.5)
-print('iirA    ', iirA[0:10])
-print('signal A', sA[0:10])
-# basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.5, B = 0.5')
+A = 0.99
+iirA = iir(sA,A)
+iirB = iir(sB,A)
+iirC = iir(sC,A)
+iirD = iir(sD,A)
+
+basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.99, B = 0.01')
+basic_fft(rate_B,tB,[sB,iirB],'Signal A vs Time, A = 0.99, B = 0.01')
+basic_fft(rate_C,tC,[sC,iirC],'Signal A vs Time, A = 0.99, B = 0.01')
+basic_fft(rate_D,tD,[sD,iirD],'Signal A vs Time, A = 0.99, B = 0.01')
