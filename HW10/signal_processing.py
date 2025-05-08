@@ -171,5 +171,8 @@ def onlineFIIIR(data,rate,cutoff,length,mode):
 
     return (s_new)
 
-new_A = onlineFIIIR(sA,rate_A,100,91,1)
-basic_fft(rate_A,tA,[sA,new_A],'Signal A vs Time, Rectangular, fL = 100, bL = 100')
+# new_A = onlineFIIIR(sA,rate_A,100,91,1)
+# basic_fft(rate_A,tA,[sA,new_A],'Signal A vs Time, Rectangular, fL = 100, bL = 100')
+
+new_B = onlineFIIIR(sB,rate_B,33,311,2)
+basic_fft(rate_B,tB,[sB,new_B],'Signal B vs Time, Hamming, fL = 33, bL = 33')
