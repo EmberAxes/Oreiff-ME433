@@ -42,12 +42,12 @@ rate_B = len(tB)/tB[-1]
 rate_C = len(tC)/tC[-1]
 rate_D = len(tD)/tD[-1]
 
-# Practice prints
-    # print("Sample rate A: ",rate_A)
-    # print("Sample rate B: ",rate_B)
-    # print("Sample rate C: ",rate_C)
-    # print("Sample rate D: ",rate_D)
-    # input("wait")
+# # Practice prints
+# print("Sample rate A: ",rate_A)
+# print("Sample rate B: ",rate_B)
+# print("Sample rate C: ",rate_C)
+# print("Sample rate D: ",rate_D)
+# input("wait")
 
 # Question 4: Signal vs time and FFT ------------------------------------------
 def basic_fft(sample_rate,time_vector,signal_vectors,title):
@@ -130,7 +130,43 @@ iirB = iir(sB,A)
 iirC = iir(sC,A)
 iirD = iir(sD,A)
 
-basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.98, B = 0.02')
-basic_fft(rate_B,tB,[sB,iirB],'Signal B vs Time, A = 0.98, B = 0.02')
-basic_fft(rate_C,tC,[sC,iirC],'Signal C vs Time, A = 0.98, B = 0.02')
-basic_fft(rate_D,tD,[sD,iirD],'Signal D vs Time, A = 0.98, B = 0.02')
+# basic_fft(rate_A,tA,[sA,iirA],'Signal A vs Time, A = 0.98, B = 0.02')
+# basic_fft(rate_B,tB,[sB,iirB],'Signal B vs Time, A = 0.98, B = 0.02')
+# basic_fft(rate_C,tC,[sC,iirC],'Signal C vs Time, A = 0.98, B = 0.02')
+# basic_fft(rate_D,tD,[sD,iirD],'Signal D vs Time, A = 0.98, B = 0.02')
+
+# Question 7: Online FIIIR weights -------------------------------------------
+
+def onlineFIIIR(data,rate,cutoff,length,mode):
+    '''
+    mode = 1: rectangular
+    mode = 2: hamming
+    mode = 3: blackman
+    mode = 4: kaiser
+    '''
+    # Configuration.
+    rate = 10000  # Sampling rate. fS
+    cutoff = 100  # Cutoff frequency. fL
+    length = 155 # Filter length, must be odd. N
+
+    # Compute sinc filter.
+    h = np.sinc(2 * cutoff / rate * (np.arange(length) - (length - 1) / 2))
+
+    # Apply window.
+    if mode == 1:
+        mode = 1
+    if mode == 2:
+        h *= np.hamming(length)
+    if mode == 3:
+        h *= np.blackman(length)
+    if mode == 4:
+        beta = input('Beta please:')
+        h *= np.kaiser(length,beta)
+
+    # Normalize to get unity gain.
+    h /= np.sum(h)
+
+    # Applying the filter to a signal s can be as simple as writing
+    s_new = np.convolve(data, h, mode='same')
+
+    return (s_new)
