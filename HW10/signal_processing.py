@@ -160,7 +160,7 @@ def onlineFIIIR(data,rate,cutoff,length,mode):
     if mode == 3:
         h *= np.blackman(N)
     if mode == 4:
-        beta = input('Beta please:')
+        beta = float(input('Beta please:'))
         h *= np.kaiser(N,beta)
 
     # Normalize to get unity gain.
@@ -171,9 +171,11 @@ def onlineFIIIR(data,rate,cutoff,length,mode):
 
     return (s_new)
 
-# new_A = onlineFIIIR(sA,rate_A,100,91,1)
-# basic_fft(rate_A,tA,[sA,new_A],'Signal A vs Time, Rectangular, fL = 100, bL = 100')
-# new_B = onlineFIIIR(sB,rate_B,33,311,2)
-# basic_fft(rate_B,tB,[sB,new_B],'Signal B vs Time, Hamming, fL = 33, bL = 33')
-# new_C = onlineFIIIR(sC,rate_C,25,77,3)
-# basic_fft(rate_C,tC,[sC,new_C],'Signal C vs Time, Hamming, fL = 25, bL = 150')
+new_A = onlineFIIIR(sA,rate_A,100,91,1)
+basic_fft(rate_A,tA,[sA,new_A],'Signal A vs Time, Rectangular, fL = 100, bL = 100')
+new_B = onlineFIIIR(sB,rate_B,33,311,2)
+basic_fft(rate_B,tB,[sB,new_B],'Signal B vs Time, Hamming, fL = 33, bL = 33')
+new_C = onlineFIIIR(sC,rate_C,25,77,3)
+basic_fft(rate_C,tC,[sC,new_C],'Signal C vs Time, Blackman, fL = 25, bL = 150')
+new_D = onlineFIIIR(sD,rate_D,4,39,4)
+basic_fft(rate_D,tD,[sD,new_D],'Signal D vs Time, Kaiser, fL = 4, bL = 24')
