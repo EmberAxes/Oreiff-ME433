@@ -145,23 +145,23 @@ def onlineFIIIR(data,rate,cutoff,length,mode):
     mode = 4: kaiser
     '''
     # Configuration.
-    rate = 10000  # Sampling rate. fS
-    cutoff = 100  # Cutoff frequency. fL
-    length = 155 # Filter length, must be odd. N
+    fS = rate  # Sampling rate. fS
+    fL = cutoff  # Cutoff frequency. fL
+    N = length # Filter length, must be odd. N
 
     # Compute sinc filter.
-    h = np.sinc(2 * cutoff / rate * (np.arange(length) - (length - 1) / 2))
+    h = np.sinc(2 * fL / fS * (np.arange(N) - (N - 1) / 2))
 
     # Apply window.
     if mode == 1:
         mode = 1
     if mode == 2:
-        h *= np.hamming(length)
+        h *= np.hamming(N)
     if mode == 3:
-        h *= np.blackman(length)
+        h *= np.blackman(N)
     if mode == 4:
         beta = input('Beta please:')
-        h *= np.kaiser(length,beta)
+        h *= np.kaiser(N,beta)
 
     # Normalize to get unity gain.
     h /= np.sum(h)
@@ -170,3 +170,6 @@ def onlineFIIIR(data,rate,cutoff,length,mode):
     s_new = np.convolve(data, h, mode='same')
 
     return (s_new)
+
+new_A = onlineFIIIR(sA,rate_A,100,91,1)
+basic_fft(rate_A,tA,[sA,new_A],'Signal A vs Time, Rectangular, fL = 100, bL = 100')
