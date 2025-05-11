@@ -139,10 +139,17 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
     case REPORT_ID_MOUSE:
     {
-      int8_t const delta = 5;
+      int8_t const delta1 = -5;
+      int8_t const delta2 = 5;
 
-      // no button, right + down, no scroll, no pan
-      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, delta, delta, 0, 0);
+      // d1 = 5, d2 = 5  --------> right and down
+      // d1 = 5, d2 = -5 --------> right and up
+      // d1 = -5, d2 = 5 --------> left and down
+      // d1 = -5, d2 = -5 --------> left and up
+
+      // d1 > 0 = move right     d1 < 0 = move left
+      // d2 > 0 = move down      d2 < 0 = move up
+      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, delta1, delta2, 0, 0);
     }
     break;
 
