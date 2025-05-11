@@ -49,10 +49,12 @@ enum  {
 };
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
+int count = 0;
 
 void led_blinking_task(void);
 void hid_task(void);
 void buttons_init();
+void led_init();
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -64,16 +66,19 @@ int main(void)
 
   if (board_init_after_tusb) {
     board_init_after_tusb();
-}
+  }
 
-while (1)
-{
   buttons_init();
-  tud_task(); // tinyusb device task
-  led_blinking_task();
+  led_init();
 
-  hid_task();
-}
+  while (1)
+  {
+    tud_task(); // tinyusb device task
+    led_blinking_task();
+
+    hid_task();
+
+  }
 }
 
 //--------------------------------------------------------------------+
@@ -348,20 +353,36 @@ void buttons_init(){
   gpio_set_dir(m,GPIO_IN);     // input
 
   // Comment this out when test is done
-  while(gpio_get(m) == 1){       // until mode button is pushed
-    if (gpio_get(u)==0){
-      break;
-     }
-    if (gpio_get(l)==0){
-      break;
-    }
-    if (gpio_get(r)==0){
-      break;
-    }
-    if (gpio_get(d)==0){
-      break;
-    }
-    sleep_ms(100);
-  }
+    // while(gpio_get(m) == 1){       // until mode button is pushed
+    //   if (gpio_get(u)==0){
+    //     break;
+    //    }
+    //   if (gpio_get(l)==0){
+    //     break;
+    //   }
+    //   if (gpio_get(r)==0){
+    //     break;
+    //   }
+    //   if (gpio_get(d)==0){
+    //     break;
+    //   }
+    //   sleep_ms(100);
+    // }
 
+}
+
+// --------------------------------------------------------------------+
+// INITIALIZING LEDs
+// --------------------------------------------------------------------+
+// initialize the buttons as inputs and also pull up
+void led_init(){
+  uint yel,gre;
+  yel = 17;       // yellow (regular mode)
+  gre = 16;       // green (remote mode)
+
+  gpio_init(yel);                // yellow LED
+  gpio_set_dir(yel,GPIO_OUT);     // output
+
+  gpio_init(gre);                // green LED
+  gpio_set_dir(gre,GPIO_OUT);     // output
 }
