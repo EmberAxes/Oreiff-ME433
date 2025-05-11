@@ -58,23 +58,22 @@ void buttons_init();
 int main(void)
 {
   board_init();
-
-  buttons_init();
-
+  
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
 
   if (board_init_after_tusb) {
     board_init_after_tusb();
-  }
+}
 
-  while (1)
-  {
-    tud_task(); // tinyusb device task
-    led_blinking_task();
+while (1)
+{
+  buttons_init();
+  tud_task(); // tinyusb device task
+  led_blinking_task();
 
-    hid_task();
-  }
+  hid_task();
+}
 }
 
 //--------------------------------------------------------------------+
@@ -351,17 +350,18 @@ void buttons_init(){
   // Comment this out when test is done
   while(gpio_get(m) == 1){       // until mode button is pushed
     if (gpio_get(u)==0){
-      printf("Up! \r\n");
+      break;
      }
     if (gpio_get(l)==0){
-      printf("Left! \r\n");
+      break;
     }
     if (gpio_get(r)==0){
-      printf("Right! \r\n");
+      break;
     }
     if (gpio_get(d)==0){
-      printf("Down! \r\n");
+      break;
     }
+    sleep_ms(100);
   }
-  print("Mode changed!\r\n");
+
 }
