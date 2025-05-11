@@ -52,11 +52,14 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
 void hid_task(void);
+void buttons_init();
 
 /*------------- MAIN -------------*/
 int main(void)
 {
   board_init();
+
+  buttons_init();
 
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
@@ -311,4 +314,54 @@ void led_blinking_task(void)
 
   board_led_write(led_state);
   led_state = 1 - led_state; // toggle
+}
+
+// --------------------------------------------------------------------+
+// INITIALIZING BUTTONS
+// --------------------------------------------------------------------+
+// initialize the buttons as inputs and also pull up
+void buttons_init(){  
+  uint u,d,l,r,m;
+  u = 10;       // up
+  l = 11;       // left
+  r = 12;       // right
+  d = 13;       // down
+  m = 18;       // mode
+
+  gpio_init(u);                // UP button
+  gpio_pull_up(u);             // Pull-up
+  gpio_set_dir(u,GPIO_IN);     // input
+
+  gpio_init(l);                // LEFT button
+  gpio_pull_up(l);             // Pull-up
+  gpio_set_dir(l,GPIO_IN);     // input
+
+  gpio_init(r);                // RIGHT button
+  gpio_pull_up(r);             // Pull-up
+  gpio_set_dir(r,GPIO_IN);     // input
+
+  gpio_init(d);                // DOWN button
+  gpio_pull_up(d);             // Pull-up
+  gpio_set_dir(d,GPIO_IN);     // input
+
+  gpio_init(m);                // MODE button
+  gpio_pull_up(m);             // Pull-up
+  gpio_set_dir(m,GPIO_IN);     // input
+
+  // Comment this out when test is done
+  while(gpio_get(m) == 1){       // until mode button is pushed
+    if (gpio_get(u)==0){
+      printf("Up! \r\n");
+     }
+    if (gpio_get(l)==0){
+      printf("Left! \r\n");
+    }
+    if (gpio_get(r)==0){
+      printf("Right! \r\n");
+    }
+    if (gpio_get(d)==0){
+      printf("Down! \r\n");
+    }
+  }
+  print("Mode changed!\r\n");
 }
