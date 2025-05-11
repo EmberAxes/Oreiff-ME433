@@ -50,6 +50,11 @@ enum  {
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 int mode = 0;
+uint u = 10;
+uint l = 11;
+uint r = 12;
+uint d = 13;
+uint m = 18;
 
 void led_blinking_task(void);
 void hid_task(void);
@@ -148,21 +153,34 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
     case REPORT_ID_MOUSE:
     {
-      int8_t rl,ud;
+      int8_t rl = 0;
+      int8_t ud = 0;
       if (mode%2 == 0){
         gpio_put(16,0);
         gpio_put(17,1);
-        rl = 3;
-        ud = 0;
+
+        if (gpio_get(u) == 0){    //up
+          ud = -5;
+        }
+        if (gpio_get(d) == 0){    //down
+          ud = 5;
+        }
+        if (gpio_get(l) == 0){    //left
+          rl = -5;
+        }
+        if (gpio_get(r) == 0){
+          rl = 5;                 //right
+        }
+
       }else{
         gpio_put(16,1);
         gpio_put(17,0);
-        rl = 0;
         ud = 0;
+        rl = 0;
       }
 
-      // rl > 0 = move right     d1 < 0 = move left
-      // ud > 0 = move down      d2 < 0 = move up
+      // rl > 0 = move right     rl < 0 = move left
+      // ud > 0 = move down      ud < 0 = move up
       tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, rl, ud, 0, 0);
     }
     break;
@@ -332,12 +350,6 @@ void led_blinking_task(void)
 // --------------------------------------------------------------------+
 // initialize the buttons as inputs and also pull up
 void buttons_init(){  
-  uint u,d,l,r,m;
-  u = 10;       // up
-  l = 11;       // left
-  r = 12;       // right
-  d = 13;       // down
-  m = 18;       // mode
 
   gpio_init(u);                // UP button
   gpio_pull_up(u);             // Pull-up
