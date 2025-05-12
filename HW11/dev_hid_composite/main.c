@@ -50,13 +50,19 @@ enum  {
 };
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
-int mode = 0;
-uint u = 10;
+int mode = 0;    // mode switch back and forth
+
+uint u = 10;      // Button pins
 uint l = 11;
 uint r = 12;
 uint d = 13;
 uint m = 18;
-int counter = 0;
+
+int c_v = 0;     // counters for buttons
+int c_h = 0;
+
+int v_speed = 0; // vertical speed
+int h_speed = 0; // horizontal speed
 
 void led_blinking_task(void);
 void hid_task(void);
@@ -155,35 +161,32 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
     case REPORT_ID_MOUSE:
     {
-      counter += 1;
-      int8_t rl = 0;
-      int8_t ud = 0;
+
+      int8_t rl;
+      int8_t ud;
       if (mode%2 == 0){
         gpio_put(16,0);
         gpio_put(17,1);
 
-        if (gpio_get(u) == 0){    //up
-          ud = -5;
-        }
-        if (gpio_get(d) == 0){    //down
-          ud = 5;
-        }
-        if (gpio_get(l) == 0){    //left
-          rl = -5;
-        }
-        if (gpio_get(r) == 0){
-          rl = 5;                 //right
-        }
+        if (gpio_get(u) == 0 | gpio_get(d) == 0){    // up down
+          c_v += 1;
+          if (c_v % 100 == 0 && )
+          if (gpio_get(u)==0){ud = -5;}
+          if (gpio_get(d)==0){ud = 5;}
+        }else{ud = 0;}
+
+        if (gpio_get(l) == 0 + gpio_get(r) == 0){    //left right
+          if (gpio_get(l)==0){rl = -5;}
+          if (gpio_get(r)==0){rl = 5;}
+        }else{rl = 0;}
+
       }else{
         gpio_put(16,1);
         gpio_put(17,0);
         ud = 0;
         rl = 0;
       }
-      gpio_put(25,0);
-      if (counter % 100 == 0){
-        gpio_put(25,1);
-      }
+    
       // rl > 0 = move right     rl < 0 = move left
       // ud > 0 = move down      ud < 0 = move up
       tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, rl, ud, 0, 0);
