@@ -60,6 +60,7 @@ uint m = 18;
 
 int c_v = 0;     // counters for buttons
 int c_h = 0;
+int c_m = 0;
 
 int v_speed = 1; // vertical speed
 int h_speed = 1; // horizontal speed
@@ -170,14 +171,14 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
         if (gpio_get(u) == 0 | gpio_get(d) == 0){    // up down
           c_v += 1;
-          if (c_v % 50 == 0 && v_speed < 5){v_speed += 1;} // increase to max
+          if (c_v % 25 == 0 && v_speed < 5){v_speed += 1;} // increase to max
           if (gpio_get(u)==0){ud = -v_speed;}
           if (gpio_get(d)==0){ud = v_speed;}
         }else{v_speed = 1; ud = 0; c_v = 0;}
 
         if (gpio_get(l) == 0 | gpio_get(r) == 0){    // left right
           c_h += 1;
-          if (c_h % 50 == 0 && h_speed < 5){h_speed += 1;} // increase to max
+          if (c_h % 25 == 0 && h_speed < 5){h_speed += 1;} // increase to max
           if (gpio_get(l)==0){rl = -h_speed;}
           if (gpio_get(r)==0){rl = h_speed;}
         }else{h_speed = 1; rl = 0; c_h = 0;}
@@ -185,8 +186,13 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
       }else{
         gpio_put(16,1);
         gpio_put(17,0);
-        ud = 0;
-        rl = 0;
+        
+        if (c_m < 100){rl = 5; ud = 0;};
+        if (100 < c_m && c_m < 200){rl = 0; ud = -5;}
+        if (200 < c_m && c_m < 300){rl = -5; ud = 0;}
+        if (300 < c_m && c_m < 400){rl = 0; ud = 5;}
+        c_m += 1;
+        if (c_m > 400){c_m = 0;}
       }
     
       // rl > 0 = move right     rl < 0 = move left
