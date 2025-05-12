@@ -138,7 +138,7 @@ int main()
         while(getSaveImage()==1){}
         //printf("HS count = %d PixelCount = %d\n",getHSCount(), getPixelCount());
         convertImage();
-        printImage();
+        //printImage();
     }
 }
 

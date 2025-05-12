@@ -47,8 +47,8 @@ pico_enable_stdio_usb(camera 1)
 # Add the standard library to the build
 target_link_libraries(camera
         pico_stdlib
-        harware_i2c
-        hardward_pwm)
+        hardware_i2c
+        hardware_pwm)
 
 # Add the standard include files to the build
 target_include_directories(camera PRIVATE
