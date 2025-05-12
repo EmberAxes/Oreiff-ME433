@@ -187,12 +187,17 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
         gpio_put(16,1);
         gpio_put(17,0);
         
-        if (c_m < 100){rl = 5; ud = 0;};
-        if (100 < c_m && c_m < 200){rl = 0; ud = -5;}
-        if (200 < c_m && c_m < 300){rl = -5; ud = 0;}
-        if (300 < c_m && c_m < 400){rl = 0; ud = 5;}
+        if (c_m < 10) { rl = 5; ud = 0; }
+        else if (c_m < 20) { rl = 3; ud = -3; }
+        else if (c_m < 30) { rl = 0; ud = -5; }
+        else if (c_m < 40) { rl = -3; ud = -3; }
+        else if (c_m < 50) { rl = -5; ud = 0; }
+        else if (c_m < 60) { rl = -3; ud = 3; }
+        else if (c_m < 70) { rl = 0; ud = 5; }
+        else if (c_m < 80) { rl = 3; ud = 3; }
+
         c_m += 1;
-        if (c_m > 400){c_m = 0;}
+        if (c_m > 80){c_m = 0;}
       }
     
       // rl > 0 = move right     rl < 0 = move left
