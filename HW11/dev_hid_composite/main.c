@@ -61,8 +61,8 @@ uint m = 18;
 int c_v = 0;     // counters for buttons
 int c_h = 0;
 
-int v_speed = 0; // vertical speed
-int h_speed = 0; // horizontal speed
+int v_speed = 1; // vertical speed
+int h_speed = 1; // horizontal speed
 
 void led_blinking_task(void);
 void hid_task(void);
@@ -170,15 +170,17 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
         if (gpio_get(u) == 0 | gpio_get(d) == 0){    // up down
           c_v += 1;
-          if (c_v % 100 == 0 && )
-          if (gpio_get(u)==0){ud = -5;}
-          if (gpio_get(d)==0){ud = 5;}
-        }else{ud = 0;}
+          if (c_v % 50 == 0 && v_speed < 5){v_speed += 1;} // increase to max
+          if (gpio_get(u)==0){ud = -v_speed;}
+          if (gpio_get(d)==0){ud = v_speed;}
+        }else{v_speed = 1; ud = 0; c_v = 0;}
 
-        if (gpio_get(l) == 0 + gpio_get(r) == 0){    //left right
-          if (gpio_get(l)==0){rl = -5;}
-          if (gpio_get(r)==0){rl = 5;}
-        }else{rl = 0;}
+        if (gpio_get(l) == 0 | gpio_get(r) == 0){    // left right
+          c_h += 1;
+          if (c_h % 50 == 0 && h_speed < 5){h_speed += 1;} // increase to max
+          if (gpio_get(l)==0){rl = -h_speed;}
+          if (gpio_get(r)==0){rl = h_speed;}
+        }else{h_speed = 1; rl = 0; c_h = 0;}
 
       }else{
         gpio_put(16,1);
