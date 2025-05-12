@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "hardware/gpio.h"
+#include <time.h>
 
 #include "bsp/board_api.h"
 #include "tusb.h"
@@ -55,6 +56,7 @@ uint l = 11;
 uint r = 12;
 uint d = 13;
 uint m = 18;
+int counter = 0;
 
 void led_blinking_task(void);
 void hid_task(void);
@@ -83,8 +85,8 @@ int main(void)
       mode +=1;               // Change mode
       sleep_ms(100);
     }
-
     hid_task();
+
   }
 }
 
@@ -153,6 +155,7 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
     case REPORT_ID_MOUSE:
     {
+      counter += 1;
       int8_t rl = 0;
       int8_t ud = 0;
       if (mode%2 == 0){
@@ -171,14 +174,16 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
         if (gpio_get(r) == 0){
           rl = 5;                 //right
         }
-
       }else{
         gpio_put(16,1);
         gpio_put(17,0);
         ud = 0;
         rl = 0;
       }
-
+      gpio_put(25,0);
+      if (counter % 100 == 0){
+        gpio_put(25,1);
+      }
       // rl > 0 = move right     rl < 0 = move left
       // ud > 0 = move down      ud < 0 = move up
       tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, rl, ud, 0, 0);
