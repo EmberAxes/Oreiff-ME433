@@ -6,14 +6,12 @@
 #include "font.h"
 
 // I2C defines
-// This example will use I2C0 on GPIO8 (SDA) and GPIO9 (SCL) running at 400KHz.
-// Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
 #define ACC_PORT i2c0
 #define ACC_SDA 16
 #define ACC_SCL 17
-#define OLED_PORT i2c1
-#define OLED_SDA 18
-#define OLED_SCL 19
+#define OLED_PORT i2c0
+#define OLED_SDA 20
+#define OLED_SCL 21
 // config registers
 #define CONFIG 0x1A
 #define GYRO_CONFIG 0x1B
@@ -45,13 +43,13 @@ int main()
 {
     stdio_init_all();
 
-    // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT, 400*1000);
+    //I2C Initialisation. Using it at 400Khz.
+    i2c_init(OLED_PORT, 400*1000);
     
-    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
-    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
-    gpio_pull_up(I2C_SDA);
-    gpio_pull_up(I2C_SCL);
+    gpio_set_function(OLED_SDA, GPIO_FUNC_I2C);
+    gpio_set_function(OLED_SCL, GPIO_FUNC_I2C);
+    gpio_pull_up(OLED_SDA);
+    gpio_pull_up(OLED_SCL);
     
     // Heartbeat initialized
     gpio_init(25);
@@ -62,13 +60,15 @@ int main()
     ssd1306_clear();
     ssd1306_update();
 
-    char message[50], fps[30];
+    char message[50];
+    float test;
 
 
     while (true) {
 
-        ssd1306_clear();                             // clear display
-        sprintf(message, "Test");   // put volts into string
+        ssd1306_clear();
+        test = 3;                             // clear display
+        sprintf(message, "Test %f", test);   // put volts into string
         drawMessage(20,10,message);                  // display string
         ssd1306_update();                            // update screen
     
@@ -77,11 +77,11 @@ int main()
         
         //-----------------------------------------------------------------------
         ssd1306_clear();                             // clear display
-        sprintf(message, "Ing");   // put volts into string
+        sprintf(message, "Ing %f", test+3);   // put volts into string
         drawMessage(20,10,message);                  // display string
         ssd1306_update();                            // update screen
     
-        gpio_put(25,1);
+        gpio_put(25,0);
         sleep_ms(250);
     }
 }
