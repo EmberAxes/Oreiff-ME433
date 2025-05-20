@@ -38,7 +38,7 @@ void drawLetter(int x, int y, char c);
 void drawMessage(int x, int y, char *m);
 void acc_init();
 void i2c_write(unsigned char addr, unsigned char reg, unsigned char val);
-int16_t i2c_read(unsigned char addr, uint8_t reg, int axis);
+float i2c_read(unsigned char addr, uint8_t reg, int axis);
 
 int main()
 {
@@ -64,16 +64,16 @@ int main()
     // accelerometer setup
     acc_init();
     char messagex[50],messagey[50];
-    int16_t X, Y;
+    float X, Y;
     gpio_put(25,1);
 
     while (true) {
 
         ssd1306_clear();                      
         X = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 0);   // Read x and y
-        Y = i2c_read(ADDR_IMU, ACCEL_ZOUT_H, 1);  
+        Y = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 1);  
         sprintf(messagex, "Test X %.4f", X);      // put into message
-        sprintf(messagey, "Test Z %.4f", Y);  
+        sprintf(messagey, "Test Y %.4f", Y);  
         drawMessage(20,10,messagex);            // write to oled
         drawMessage(20,20,messagey);
         ssd1306_update();                            // update screen
@@ -116,7 +116,7 @@ void acc_init(){
     i2c_write_blocking(i2c_default,ADDR_IMU,buff2,2,false);
 }
 
-int16_t i2c_read(unsigned char addr, uint8_t reg, int axis){
+float i2c_read(unsigned char addr, uint8_t reg, int axis){
     /*
     X: axis = 0
     Y: axis = 1
@@ -135,9 +135,9 @@ int16_t i2c_read(unsigned char addr, uint8_t reg, int axis){
     int16_t y = (buff[2] << 8 ) | buff[3];
     int16_t z = (buff[4] << 8 ) | buff[5];
 
-    int16_t coord[3];
-    coord[0] = x;
-    coord[1] = y;
+    float coord[3];
+    coord[0] = x*0.000061 - 0.6;
+    coord[1] = y*0.000061 - 0.5;
     coord[2] = z;
     return(coord[axis]);
 }
