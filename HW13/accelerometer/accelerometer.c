@@ -38,7 +38,7 @@ void drawLetter(int x, int y, char c);
 void drawMessage(int x, int y, char *m);
 void acc_init();
 void i2c_write(unsigned char addr, unsigned char reg, unsigned char val);
-uint8_t i2c_read(unsigned char addr, uint8_t reg);
+int16_t i2c_read(unsigned char addr, uint8_t reg, int axis);
 
 int main()
 {
@@ -64,16 +64,16 @@ int main()
     // accelerometer setup
     acc_init();
     char messagex[50],messagey[50];
-    float X, Y;
+    int16_t X, Y;
     gpio_put(25,1);
 
     while (true) {
 
         ssd1306_clear();                      
-        X = i2c_read(ADDR_IMU, ACCEL_XOUT_H);   // Read x and y
-        Y = i2c_read(ADDR_IMU, ACCEL_YOUT_H);  
-        sprintf(messagex, "Test %.4f", X);      // put into message
-        sprintf(messagey, "Test %.4f", Y);  
+        X = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 0);   // Read x and y
+        Y = i2c_read(ADDR_IMU, ACCEL_ZOUT_H, 1);  
+        sprintf(messagex, "Test X %.4f", X);      // put into message
+        sprintf(messagey, "Test Z %.4f", Y);  
         drawMessage(20,10,messagex);            // write to oled
         drawMessage(20,20,messagey);
         ssd1306_update();                            // update screen
@@ -116,18 +116,30 @@ void acc_init(){
     i2c_write_blocking(i2c_default,ADDR_IMU,buff2,2,false);
 }
 
-uint8_t i2c_read(unsigned char addr, uint8_t reg){
+int16_t i2c_read(unsigned char addr, uint8_t reg, int axis){
+    /*
+    X: axis = 0
+    Y: axis = 1
+    Z: axis = 2
+    */
 
     uint8_t regist[1];
 
     regist[0] = reg;
     i2c_write_blocking(i2c_default, addr, regist, 1, true);
     
-    uint8_t buff[1];
-    i2c_read_blocking(i2c_default, addr, buff, 1, false);
+    uint8_t buff[6];
+    i2c_read_blocking(i2c_default, addr, buff, 6, false);
 
-    buff[0] = buff[0]
-    return(buff[0]);
+    int16_t x = (buff[0] << 8 ) | buff[1];
+    int16_t y = (buff[2] << 8 ) | buff[3];
+    int16_t z = (buff[4] << 8 ) | buff[5];
+
+    int16_t coord[3];
+    coord[0] = x;
+    coord[1] = y;
+    coord[2] = z;
+    return(coord[axis]);
 }
 
 void i2c_write(unsigned char addr, unsigned char reg, unsigned char val){
