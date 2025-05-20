@@ -43,7 +43,6 @@ uint8_t i2c_read(unsigned char addr, uint8_t reg);
 int main()
 {
     stdio_init_all();
-    //acc_init();
 
     //I2C Initialisation. Using it at 400Khz.
     i2c_init(I2C_PORT, 400*1000);
@@ -62,27 +61,28 @@ int main()
     ssd1306_clear();
     ssd1306_update();
 
+    // accelerometer setup
+    acc_init();
     char message[50];
     float test;
 
     while (true) {
 
-        ssd1306_clear();                             // clear display
-        sprintf(message, "Test");   // put volts into string
-        ssd1306_clear();
-        test = 3;                             // clear display
-        sprintf(message, "Test %f", test);   // put volts into string
+        ssd1306_clear();                      
+        test = i2c_read(ADDR_IMU, WHO_AM_I);  
+        sprintf(message, "Test %f", test);   
         drawMessage(20,10,message);                  // display string
         ssd1306_update();                            // update screen
-        
+        gpio_put(25,1);
+        sleep_ms(250);
+
         //-----------------------------------------------------------------------
         ssd1306_clear();                             // clear display
-        sprintf(message, "Ing");   // put volts into string
-        sprintf(message, "Ing %f", test+3);   // put volts into string
+        sprintf(message, "Ing %d", test+3);   // put volts into string
         drawMessage(20,10,message);                  // display string
         ssd1306_update();                            // update screen
     
-        gpio_put(25,1);
+
         gpio_put(25,0);
         sleep_ms(250);
     }
@@ -118,7 +118,7 @@ void acc_init(){
 }
 
 uint8_t i2c_read(unsigned char addr, uint8_t reg){
-    addr = 0x68 | (addr & 0b111);
+
     uint8_t regist[1];
 
     regist[0] = reg;
@@ -127,7 +127,7 @@ uint8_t i2c_read(unsigned char addr, uint8_t reg){
     uint8_t buff[1];
     i2c_read_blocking(i2c_default, addr, buff, 1, false);
 
-    buff[0] = buff[0] & 0b00000001;
+    buff[0] = buff[0] & 0b01111110;
     return(buff[0]);
 }
 
