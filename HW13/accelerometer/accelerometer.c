@@ -1,10 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "hardware/adc.h"
 #include "ssd1306.h"
 #include "font.h"
 
+// OLED pixel defines
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 32
+#define CENTER_X 64
+#define CENTER_Y 16
 // I2C defines
 #define I2C_PORT i2c0
 #define I2C_SDA 16
@@ -40,6 +46,7 @@ void acc_init();
 void i2c_write(unsigned char addr, unsigned char reg, unsigned char val);
 float i2c_read(unsigned char addr, uint8_t reg, int axis);
 int acc2pix(float acc, int axis);
+void drawline(int x0, int y0);
 
 int main()
 {
@@ -70,16 +77,14 @@ int main()
     gpio_put(25,1);
 
     while (true) {
-
-        ssd1306_clear();                      
+                    
         X = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 0);   // Read x and y
         Y = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 1);
         
         x = acc2pix(X,0);                 // Turn acc to pixel
         y = acc2pix(Y,1);
         
-        ssd1306_drawPixel(x, y, 1);            // write to oled
-        ssd1306_update();                            // update screen
+        drawline(x,y);
        
         sleep_ms(10);
     }
@@ -88,23 +93,40 @@ int main()
 int acc2pix(float acc, int axis){
     // x axis = 0, y axis = 1
     int coords[2];
-    coords[0] = 64*(1-acc);
-    coords[1] = 16*(1+acc);
+    coords[0] = CENTER_X*(1-acc);
+    coords[1] = CENTER_Y*(1+acc);
 
-    if (coords[0] < 0){
-        coords[0] = 0;
-    }
-    if (coords[0] > 128){
-        coords[0] = 128;
-    }
-    if (coords[1] < 0){
-        coords[1] = 0;
-    }
-    if (coords[1] > 32){
-        coords[1] = 32;
-    }
+    // if (coords[0] < 0){
+    //     coords[0] = 0;
+    // }
+    // if (coords[0] > 128){
+    //     coords[0] = 128;
+    // }
+    // if (coords[1] < 0){
+    //     coords[1] = 0;
+    // }
+    // if (coords[1] > 32){
+    //     coords[1] = 32;
+    // }
 
     return(coords[axis]);
+}
+
+void drawline(int x0, int y0){
+    int xdir, ydir, newy, newx;
+    newx = CENTER_X;
+    if (x0 > CENTER_X){xdir = 1;}else{xdir=-1;}         // getting directions
+    
+    while (newx != x0){
+        float slope = (float)(y0 - CENTER_Y)/(float)(x0 - CENTER_X);
+        newy = slope*(newx - CENTER_X) + CENTER_Y;
+
+        ssd1306_drawPixel(newx,newy,1);
+        ssd1306_update();
+
+        newx = newx + xdir;
+    }
+    
 }
 
 void acc_init(){
