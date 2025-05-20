@@ -77,7 +77,7 @@ int main()
     gpio_put(25,1);
 
     while (true) {
-                    
+        ssd1306_clear();         
         X = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 0);   // Read x and y
         Y = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 1);
         
