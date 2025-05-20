@@ -6,12 +6,10 @@
 #include "font.h"
 
 // I2C defines
-#define ACC_PORT i2c0
-#define ACC_SDA 16
-#define ACC_SCL 17
-#define OLED_PORT i2c0
-#define OLED_SDA 20
-#define OLED_SCL 21
+#define I2C_PORT i2c0
+#define I2C_SDA 16
+#define I2C_SCL 17
+#define ADDR_IMU 0x68
 // config registers
 #define CONFIG 0x1A
 #define GYRO_CONFIG 0x1B
@@ -38,18 +36,22 @@
 
 void drawLetter(int x, int y, char c);
 void drawMessage(int x, int y, char *m);
+void acc_init();
+void i2c_write(unsigned char addr, unsigned char reg, unsigned char val);
+uint8_t i2c_read(unsigned char addr, uint8_t reg);
 
 int main()
 {
     stdio_init_all();
+    //acc_init();
 
     //I2C Initialisation. Using it at 400Khz.
-    i2c_init(OLED_PORT, 400*1000);
+    i2c_init(I2C_PORT, 400*1000);
     
-    gpio_set_function(OLED_SDA, GPIO_FUNC_I2C);
-    gpio_set_function(OLED_SCL, GPIO_FUNC_I2C);
-    gpio_pull_up(OLED_SDA);
-    gpio_pull_up(OLED_SCL);
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C_SDA);
+    gpio_pull_up(I2C_SCL);
     
     // Heartbeat initialized
     gpio_init(25);
@@ -63,24 +65,24 @@ int main()
     char message[50];
     float test;
 
-
     while (true) {
 
+        ssd1306_clear();                             // clear display
+        sprintf(message, "Test");   // put volts into string
         ssd1306_clear();
         test = 3;                             // clear display
         sprintf(message, "Test %f", test);   // put volts into string
         drawMessage(20,10,message);                  // display string
         ssd1306_update();                            // update screen
-    
-        gpio_put(25,1);
-        sleep_ms(250);
         
         //-----------------------------------------------------------------------
         ssd1306_clear();                             // clear display
+        sprintf(message, "Ing");   // put volts into string
         sprintf(message, "Ing %f", test+3);   // put volts into string
         drawMessage(20,10,message);                  // display string
         ssd1306_update();                            // update screen
     
+        gpio_put(25,1);
         gpio_put(25,0);
         sleep_ms(250);
     }
@@ -105,4 +107,36 @@ void drawMessage(int x, int y, char *m){
         drawLetter(x+i*6, y, m[i]);
         i++;
     }
+}
+
+
+void acc_init(){
+    unsigned char buff[2];
+    buff[0] = PWR_MGMT_1;
+    buff[1] = 0x00;
+    i2c_write_blocking(i2c_default,ADDR_IMU,buff,2,false);
+}
+
+uint8_t i2c_read(unsigned char addr, uint8_t reg){
+    addr = 0x68 | (addr & 0b111);
+    uint8_t regist[1];
+
+    regist[0] = reg;
+    i2c_write_blocking(i2c_default, addr, regist, 1, true);
+    
+    uint8_t buff[1];
+    i2c_read_blocking(i2c_default, addr, buff, 1, false);
+
+    buff[0] = buff[0] & 0b00000001;
+    return(buff[0]);
+}
+
+void i2c_write(unsigned char addr, unsigned char reg, unsigned char val){
+    unsigned char buff[2];
+
+    addr = 0x68 | (addr & 0b111);  // 0 1 0 0 a d r 0  The 0 means write
+    buff[0] = reg;
+    buff[1] = val;
+
+    i2c_write_blocking(i2c_default, addr, buff, 2, false);
 }
