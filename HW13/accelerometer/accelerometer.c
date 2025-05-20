@@ -63,28 +63,22 @@ int main()
 
     // accelerometer setup
     acc_init();
-    char message[50];
-    float test;
+    char messagex[50],messagey[50];
+    float X, Y;
+    gpio_put(25,1);
 
     while (true) {
 
         ssd1306_clear();                      
-        test = i2c_read(ADDR_IMU, WHO_AM_I);  
-        sprintf(message, "Test %f", test);   
-        drawMessage(20,10,message);                  // display string
+        X = i2c_read(ADDR_IMU, ACCEL_XOUT_H);   // Read x and y
+        Y = i2c_read(ADDR_IMU, ACCEL_YOUT_H);  
+        sprintf(messagex, "Test %.4f", X);      // put into message
+        sprintf(messagey, "Test %.4f", Y);  
+        drawMessage(20,10,messagex);            // write to oled
+        drawMessage(20,20,messagey);
         ssd1306_update();                            // update screen
-        gpio_put(25,1);
-        sleep_ms(250);
-
-        //-----------------------------------------------------------------------
-        ssd1306_clear();                             // clear display
-        sprintf(message, "Ing %d", test+3);   // put volts into string
-        drawMessage(20,10,message);                  // display string
-        ssd1306_update();                            // update screen
-    
-
-        gpio_put(25,0);
-        sleep_ms(250);
+       
+        sleep_ms(10);
     }
 }
 
@@ -111,10 +105,15 @@ void drawMessage(int x, int y, char *m){
 
 
 void acc_init(){
-    unsigned char buff[2];
+    unsigned char buff[2]; // Turn on
     buff[0] = PWR_MGMT_1;
     buff[1] = 0x00;
     i2c_write_blocking(i2c_default,ADDR_IMU,buff,2,false);
+
+    unsigned char buff2[2]; // enable accelerometer
+    buff2[0] = ACCEL_CONFIG;
+    buff2[1] = 0b11100000;
+    i2c_write_blocking(i2c_default,ADDR_IMU,buff2,2,false);
 }
 
 uint8_t i2c_read(unsigned char addr, uint8_t reg){
@@ -127,7 +126,7 @@ uint8_t i2c_read(unsigned char addr, uint8_t reg){
     uint8_t buff[1];
     i2c_read_blocking(i2c_default, addr, buff, 1, false);
 
-    buff[0] = buff[0] & 0b01111110;
+    buff[0] = buff[0]
     return(buff[0]);
 }
 
