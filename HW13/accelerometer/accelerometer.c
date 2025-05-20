@@ -39,6 +39,7 @@ void drawMessage(int x, int y, char *m);
 void acc_init();
 void i2c_write(unsigned char addr, unsigned char reg, unsigned char val);
 float i2c_read(unsigned char addr, uint8_t reg, int axis);
+int acc2pix(float acc, int axis);
 
 int main()
 {
@@ -63,46 +64,48 @@ int main()
 
     // accelerometer setup
     acc_init();
-    char messagex[50],messagey[50];
+    char message[50];
     float X, Y;
+    int x, y;
     gpio_put(25,1);
 
     while (true) {
 
         ssd1306_clear();                      
         X = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 0);   // Read x and y
-        Y = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 1);  
-        sprintf(messagex, "Test X %.4f", X);      // put into message
-        sprintf(messagey, "Test Y %.4f", Y);  
-        drawMessage(20,10,messagex);            // write to oled
-        drawMessage(20,20,messagey);
+        Y = i2c_read(ADDR_IMU, ACCEL_XOUT_H, 1);
+        
+        x = acc2pix(X,0);                 // Turn acc to pixel
+        y = acc2pix(Y,1);
+        
+        ssd1306_drawPixel(x, y, 1);            // write to oled
         ssd1306_update();                            // update screen
        
         sleep_ms(10);
     }
 }
 
-void drawLetter(int x, int y, char c){
-    int j;
-    for (j=0;j<5;j++){      // Every ascii character is 5 columns
-        char col = ASCII[c-0x20][j];
+int acc2pix(float acc, int axis){
+    // x axis = 0, y axis = 1
+    int coords[2];
+    coords[0] = 64*(1-acc);
+    coords[1] = 16*(1+acc);
 
-        int i;
-        for (i=0;i<8;i++){  // Each column is 8 bits
-            char bit = (col >> i)&0b1;      // Checking the bit status
-            ssd1306_drawPixel(x+j, y+i, bit);
-        }
+    if (coords[0] < 0){
+        coords[0] = 0;
     }
-}
-
-void drawMessage(int x, int y, char *m){
-    int i = 0;   // Start at the first letter
-    while(m[i] != 0){       // While it is NOT ASCII null
-        drawLetter(x+i*6, y, m[i]);
-        i++;
+    if (coords[0] > 128){
+        coords[0] = 128;
     }
-}
+    if (coords[1] < 0){
+        coords[1] = 0;
+    }
+    if (coords[1] > 32){
+        coords[1] = 32;
+    }
 
+    return(coords[axis]);
+}
 
 void acc_init(){
     unsigned char buff[2]; // Turn on
