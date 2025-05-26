@@ -85,8 +85,7 @@ int main()
         y = acc2pix(Y,1);
         
         drawline(x,y);
-       
-        sleep_ms(10);
+
     }
 }
 
