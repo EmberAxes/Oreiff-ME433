@@ -7,7 +7,7 @@
 #define ENABLE 19
 #define TOP 65535
 #define MAX_DUTY 1
-#define MIN_DUTY 0.1
+#define MIN_DUTY 0.12
 
 void connectusb();
 void pwmsetup();
