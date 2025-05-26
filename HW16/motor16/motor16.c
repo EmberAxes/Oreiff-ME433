@@ -1,13 +1,17 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
+#include <math.h>
 
 #define PHASE 18
 #define ENABLE 19
 #define TOP 65535
+#define MAX_DUTY 1
+#define MIN_DUTY 0.1
 
 void connectusb();
 void pwmsetup();
+void setspeed(float pwm);
 
 int main()
 {
@@ -21,15 +25,36 @@ int main()
 
     connectusb();
     pwmsetup();
+    gpio_put(PHASE, 1);
+    pwm_set_gpio_level(ENABLE, 0);
+
+    float duty = 0;
+    float newduty = 0;
 
     while (true) {
-        gpio_put(PHASE, 1);
-        pwm_set_gpio_level(ENABLE, TOP);
-        sleep_ms(1000);
+        char change;
+        printf("+ to increase, - to decrease\n");
+        scanf("%c", &change);
 
-        gpio_put(PHASE, 0);
-        pwm_set_gpio_level(ENABLE, TOP);
-        sleep_ms(1000);
+        if (change == '+'){duty+=0.01;}    // increase speed
+        if (change == '-'){duty-=0.01;}    // decrease speed
+
+        newduty = duty;
+
+        if (duty > 0){                     // run forward or zero          
+            if (duty > MAX_DUTY){newduty = MAX_DUTY;}        // prevent above 100% duty cycle
+            if (duty < MIN_DUTY){newduty = MIN_DUTY;}    // motor doesn't move below 10
+            gpio_put(PHASE, 1);
+            setspeed(newduty);
+            printf("Forward duty cycle: %.3f\n",duty);
+        }
+        if (duty < 0){                              // run backward
+            if (duty < -MAX_DUTY){newduty = -MAX_DUTY;}        // prevent above 100% duty cycle
+            if (duty > -MIN_DUTY){newduty = -MIN_DUTY;}    // motor doesn't move below 10
+            gpio_put(PHASE, 0);
+            setspeed(fabs(newduty));
+            printf("Backward duty cycle: %.3f\n",duty);
+        }
         
     }
 }
@@ -49,4 +74,9 @@ void pwmsetup(){
     pwm_init(slice_num, &config, true);  // true = start PWM immediately
 
     pwm_set_wrap(slice_num, TOP);
+}
+
+void setspeed(float pwm){
+    int sp = (int)round(pwm*TOP);
+    pwm_set_gpio_level(ENABLE, sp);
 }
