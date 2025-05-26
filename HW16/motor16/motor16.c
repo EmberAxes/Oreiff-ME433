@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/adc.h"
+#include "hardware/pwm.h"
 
 #define PHASE 18
 #define ENABLE 19
@@ -25,10 +25,13 @@ int main()
     while (true) {
         gpio_put(PHASE, 1);
         pwm_set_gpio_level(ENABLE, TOP);
+        printf("Forward\n");
         sleep_ms(2000);
+
         gpio_put(PHASE, 0);
         pwm_set_gpio_level(ENABLE, TOP);
-        sleep_ms(20000);
+        printf("Backward\n");
+        sleep_ms(2000);
     }
 }
 
@@ -43,8 +46,8 @@ void connectusb(){
 void pwmsetup(){
     uint slice_num = pwm_gpio_to_slice_num(ENABLE);
     // Configure PWM: 100% duty cycle, default frequency (~1kHz is fine)
-    int pwm_config = pwm_get_default_config();
-    pwm_init(slice_num, &pwm_config, true);  // true = start PWM immediately
+    pwm_config config = pwm_get_default_config();
+    pwm_init(slice_num, &config, true);  // true = start PWM immediately
 
     pwm_set_wrap(slice_num, TOP);
 }
