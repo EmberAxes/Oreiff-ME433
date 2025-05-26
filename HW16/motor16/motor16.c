@@ -24,14 +24,13 @@ int main()
 
     while (true) {
         gpio_put(PHASE, 1);
-        pwm_set_gpio_level(ENABLE, -TOP);
-        printf("Forward\n");
-        sleep_ms(2000);
+        pwm_set_gpio_level(ENABLE, TOP);
+        sleep_ms(1000);
 
         gpio_put(PHASE, 0);
-        pwm_set_gpio_level(ENABLE, 0.5*TOP);
-        printf("Backward\n");
-        sleep_ms(2000);
+        pwm_set_gpio_level(ENABLE, TOP);
+        sleep_ms(1000);
+        
     }
 }
 
