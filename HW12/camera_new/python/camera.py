@@ -1,14 +1,14 @@
-import pgzrun
+import pgzrun # pip install pgzero
 
 import serial
-ser = serial.Serial('COM4') # the name of your port here
+ser = serial.Serial('/dev/tty.usbmodem101') # the name of your port here
 print('Opening port: ' + str(ser.name))
 
 import numpy as np
 
 # Set the window size
-WIDTH = 500
-HEIGHT = 500
+WIDTH = 400
+HEIGHT = 400
 def update():
     selection_endline = 'c'+'\n'
      
