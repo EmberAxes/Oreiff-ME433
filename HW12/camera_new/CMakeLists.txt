@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(camera_new camera_new.c )
+add_executable(camera_new camera_new.c cam.c)
 
 pico_set_program_name(camera_new "camera_new")
 pico_set_program_version(camera_new "0.1")
@@ -46,7 +46,9 @@ pico_enable_stdio_usb(camera_new 1)
 
 # Add the standard library to the build
 target_link_libraries(camera_new
-        pico_stdlib)
+        pico_stdlib
+        hardware_i2c
+        hardware_pwm)
 
 # Add the standard include files to the build
 target_include_directories(camera_new PRIVATE
