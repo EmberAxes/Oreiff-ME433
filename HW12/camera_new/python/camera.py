@@ -7,8 +7,8 @@ print('Opening port: ' + str(ser.name))
 import numpy as np
 
 # Set the window size
-WIDTH = 400
-HEIGHT = 400
+WIDTH = 200
+HEIGHT = 200
 def update():
     selection_endline = 'c'+'\n'
      
