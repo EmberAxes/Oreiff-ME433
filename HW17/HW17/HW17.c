@@ -17,8 +17,7 @@ void pwmsetupB();
 void setspeed(float pwm, int enable);
 void phaseenablesetup();
 
-int main()
-{
+int main(){
     stdio_init_all();
     connectusb();
     init_camera_pins();
@@ -29,7 +28,7 @@ int main()
     float duty = 0;
     float newduty = 0;
 
-    while (true) {
+    while (true){
 
         setSaveImage(1);
         while(getSaveImage()==1){}
@@ -38,21 +37,26 @@ int main()
         
         // Congrats now I have found the center of the line
 
+        
+        newduty = 0.5;
+        gpio_put(PHASEL, 1);
+        gpio_put(PHASER, 0);
+
         // Go straight test portion
-        if (com < 42 && com > 38){
-            newduty = 0.5;
-            // Both motors go forward
-            gpio_put(PHASEL, 1);
-            gpio_put(PHASER, 0);
+        if (com < 45 && com > 35){            // Go forward
             setspeed(newduty, ENABLEL);
             setspeed(newduty, ENABLER);
-        }else{
-            setspeed(0, ENABLEL); // STOP
-            setspeed(0, ENABLER); // STOP
+        }else if (com < 35){                   // Turn right aka make left spin more
+            duty = (40.-com) / 40;
+            setspeed(duty, ENABLEL);          // increase left spin based on how far off
+            setspeed(newduty, ENABLER);       // keep right wheel the same
+        }else if (com > 45){                   // Turn left aka make right spin more
+            duty = (com - 40.) / 40;
+            setspeed(newduty, ENABLEL);          // increase right spin based on how far off
+            setspeed(duty, ENABLER);       // keep left wheel the same
         }
-        
     }
-    
+    return(0);
 }
 
 void connectusb(){
