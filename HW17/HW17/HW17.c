@@ -37,7 +37,7 @@ int main()
         // Congrats now I have found the center of the line
 
         // Go straight test portion
-        if (com < 45 & com > 35){
+        if (com < 42 & com > 38){
             newduty = 0.5;
             // Both motors go forward
             gpio_put(PHASEL, 1);
@@ -48,7 +48,6 @@ int main()
             setspeed(0, ENABLEL); // STOP
             setspeed(0, ENABLER); // STOP
         }
-
         
     }
     
@@ -59,7 +58,7 @@ void connectusb(){
     while (!stdio_usb_connected()) {
         sleep_ms(100);
     }
-    printf("Connected!\n");
+    printf("Hello camera!\n");
 }
 
 void pwmsetupA(){
