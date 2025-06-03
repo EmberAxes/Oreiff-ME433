@@ -30,33 +30,25 @@ int main()
     float newduty = 0;
 
     while (true) {
-        char change;
-        printf("+ to increase, - to decrease\n");
-        scanf("%c", &change);
+        setSaveImage(1);
+        while(getSaveImage()==1){}
+        convertImage();
+        int com = findLine(IMAGESIZEY/2); // calculate the position of the center of the line
+        // Congrats now I have found the center of the line
 
-        if (change == '+'){duty+=0.01;}    // increase speed
-        if (change == '-'){duty-=0.01;}    // decrease speed
-
-        newduty = duty;
-
-        if (duty > 0){                     // run forward or zero          
-            if (duty > MAX_DUTY){newduty = MAX_DUTY;}        // prevent above 100% duty cycle
-            if (duty < MIN_DUTY){newduty = MIN_DUTY;}    // motor doesn't move below 10
+        // Go straight test portion
+        if (com < 45 & com > 35){
+            newduty = 0.5;
+            // Both motors go forward
             gpio_put(PHASEL, 1);
-            gpio_put(PHASER, 1);
+            gpio_put(PHASER, 0);
             setspeed(newduty, ENABLEL);
             setspeed(newduty, ENABLER);
-            printf("Forward duty cycle: %.3f\n",duty);
+        }else{
+            setspeed(0, ENABLEL); // STOP
+            setspeed(0, ENABLER); // STOP
         }
-        if (duty < 0){                              // run backward
-            if (duty < -MAX_DUTY){newduty = -MAX_DUTY;}        // prevent above 100% duty cycle
-            if (duty > -MIN_DUTY){newduty = -MIN_DUTY;}    // motor doesn't move below 10
-            gpio_put(PHASEL, 0);
-            gpio_put(PHASER, 0);
-            setspeed(fabs(newduty),ENABLEL);
-            setspeed(fabs(newduty),ENABLER);
-            printf("Backward duty cycle: %.3f\n",duty);
-        }
+
         
     }
     
@@ -120,3 +112,32 @@ void phaseenablesetup(){
 //         convertImage();
 //         int com = findLine(IMAGESIZEY/2); // calculate the position of the center of the line
 //     }
+
+// Old make motors run manually code
+//         char change;
+//         printf("+ to increase, - to decrease\n");
+//         scanf("%c", &change);
+
+//         if (change == '+'){duty+=0.01;}    // increase speed
+//         if (change == '-'){duty-=0.01;}    // decrease speed
+
+//         newduty = duty;
+
+//         if (duty > 0){                     // run forward or zero          
+//             if (duty > MAX_DUTY){newduty = MAX_DUTY;}        // prevent above 100% duty cycle
+//             if (duty < MIN_DUTY){newduty = MIN_DUTY;}    // motor doesn't move below 10
+//             gpio_put(PHASEL, 1);
+//             gpio_put(PHASER, 0);
+//             setspeed(newduty, ENABLEL);
+//             setspeed(newduty, ENABLER);
+//             printf("Forward duty cycle: %.3f\n",duty);
+//         }
+//         if (duty < 0){                              // run backward
+//             if (duty < -MAX_DUTY){newduty = -MAX_DUTY;}        // prevent above 100% duty cycle
+//             if (duty > -MIN_DUTY){newduty = -MIN_DUTY;}    // motor doesn't move below 10
+//             gpio_put(PHASEL, 0);
+//             gpio_put(PHASER, 1);
+//             setspeed(fabs(newduty),ENABLEL);
+//             setspeed(fabs(newduty),ENABLER);
+//             printf("Backward duty cycle: %.3f\n",duty);
+//         }
