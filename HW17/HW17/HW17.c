@@ -30,14 +30,16 @@ int main()
     float newduty = 0;
 
     while (true) {
+
         setSaveImage(1);
         while(getSaveImage()==1){}
         convertImage();
         int com = findLine(IMAGESIZEY/2); // calculate the position of the center of the line
+        
         // Congrats now I have found the center of the line
 
         // Go straight test portion
-        if (com < 42 & com > 38){
+        if (com < 42 && com > 38){
             newduty = 0.5;
             // Both motors go forward
             gpio_put(PHASEL, 1);
