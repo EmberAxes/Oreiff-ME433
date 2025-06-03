@@ -19,7 +19,6 @@ void phaseenablesetup();
 
 int main(){
     stdio_init_all();
-    connectusb();
     init_camera_pins();
     phaseenablesetup();
     pwmsetupA();
@@ -27,6 +26,9 @@ int main(){
 
     float duty = 0;
     float newduty = 0;
+    newduty = 0.3;
+    gpio_put(PHASEL, 1);
+    gpio_put(PHASER, 0);
 
     while (true){
 
@@ -37,23 +39,20 @@ int main(){
         
         // Congrats now I have found the center of the line
 
-        
-        newduty = 0.5;
-        gpio_put(PHASEL, 1);
-        gpio_put(PHASER, 0);
-
         // Go straight test portion
-        if (com < 45 && com > 35){            // Go forward
+        if (com < 41 && com > 39){            // Go forward
             setspeed(newduty, ENABLEL);
             setspeed(newduty, ENABLER);
-        }else if (com < 35){                   // Turn right aka make left spin more
+        }else if (com < 39){                   // Turn right aka make left spin more
             duty = (40.-com) / 40;
-            setspeed(duty, ENABLEL);          // increase left spin based on how far off
-            setspeed(newduty, ENABLER);       // keep right wheel the same
-        }else if (com > 45){                   // Turn left aka make right spin more
+            if (duty > MAX_DUTY){duty = MAX_DUTY;}
+            setspeed(newduty, ENABLEL);          
+            setspeed(duty, ENABLER);       
+        }else if (com > 40){                   // Turn left aka make right spin more
             duty = (com - 40.) / 40;
-            setspeed(newduty, ENABLEL);          // increase right spin based on how far off
-            setspeed(duty, ENABLER);       // keep left wheel the same
+            if (duty > MAX_DUTY){duty = MAX_DUTY;}
+            setspeed(duty, ENABLEL);          
+            setspeed(newduty*0.9, ENABLER);       
         }
     }
     return(0);
