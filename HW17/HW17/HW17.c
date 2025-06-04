@@ -40,20 +40,21 @@ int main(){
         // Congrats now I have found the center of the line
 
         // Go straight test portion
-        if (com < 41 && com > 39){            // Go forward
-            setspeed(newduty, ENABLEL);
+
+        if (com < 43 && com > 37){
             setspeed(newduty, ENABLER);
-        }else if (com < 39){                   // Turn right aka make left spin more
-            duty = (40.-com) / 40;
-            if (duty > MAX_DUTY){duty = MAX_DUTY;}
-            setspeed(newduty, ENABLEL);          
-            setspeed(duty, ENABLER);       
-        }else if (com > 40){                   // Turn left aka make right spin more
-            duty = (com - 40.) / 40;
-            if (duty > MAX_DUTY){duty = MAX_DUTY;}
-            setspeed(duty, ENABLEL);          
-            setspeed(newduty*0.9, ENABLER);       
+            setspeed(newduty, ENABLEL);
         }
+        elseif (com <= 37){                   // Turn right aka make left spin more
+            setspeed(0, ENABLEL);          
+            setspeed(newduty, ENABLER);
+      
+        }else if (com >= 43){                   // Turn left aka make right spin more
+            setspeed(newduty, ENABLEL);          
+            setspeed(0, ENABLER);
+    
+        }
+        
     }
     return(0);
 }

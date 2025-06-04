@@ -6,10 +6,10 @@ int main()
 {
     stdio_init_all();
 
-    while (!stdio_usb_connected()) {
-        sleep_ms(100);
-    }
-    printf("Hello, camera!\n");
+    // while (!stdio_usb_connected()) {
+    //     sleep_ms(100);
+    // }
+    // printf("Hello, camera!\n");
 
     init_camera_pins();
  
